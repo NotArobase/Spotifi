@@ -28,7 +28,10 @@ class UserService {
         throw new Error('username ou password manquant');
       }
       const result = await this.collection.insertOne({ username, password });
-      return result.ops[0]; // Return le user créé
+
+      const createdUser = await this.collection.findOne({ _id: result.insertedId });
+
+      return createdUser; // Return le user créé
     } catch (error) {
       throw new Error('Error creating user: ' + error.message);
     }
