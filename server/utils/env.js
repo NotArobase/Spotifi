@@ -10,5 +10,5 @@ const DB_URL = "mongodb+srv://arobase:admin@cluster0.papma.mongodb.net/?retryWri
 exports.DB_DB = DB_DB;
 exports.DB_COLLECTION_SONGS = DB_COLLECTION_SONGS;
 exports.DB_COLLECTION_PLAYLISTS = DB_COLLECTION_PLAYLISTS;
-exports.DB_COLLECTION_USERS = this.DB_COLLECTION_USERS
+exports.DB_COLLECTION_USERS = DB_COLLECTION_USERS
 exports.DB_URL = DB_URL;
