@@ -1,4 +1,4 @@
-const { DB_COLLECTION_USERS } = require('../utils/db');
+const DB_CONSTS = require("../utils/env");
 
 class UserService {
   /**
@@ -12,7 +12,7 @@ class UserService {
       if (!login || !password) {
         throw new Error('login ou password manquant');
       }
-      const result = await DB_COLLECTION_USERS.insertOne({ login, password });
+      const result = await DB_CONSTS.DB_COLLECTION_USERS.insertOne({ login, password });
       return result.ops[0]; // Return le user créé
     } catch (error) {
       throw new Error('Error creating user: ' + error.message);
@@ -26,7 +26,7 @@ class UserService {
    */
   async deleteUser(userId) {
     try {
-      const result = await DB_COLLECTION_USERS.deleteOne({ _id: userId });
+      const result = await DB_CONSTS.DB_COLLECTION_USERS.deleteOne({ _id: userId });
       return result.deletedCount > 0;
     } catch (error) {
       throw new Error('Error deleting user: ' + error.message);
@@ -40,7 +40,7 @@ class UserService {
    */
   async userExists(login) {
     try {
-      const user = await DB_COLLECTION_USERS.findOne({ login });
+      const user = await DB_CONSTS.DB_COLLECTION_USERS.findOne({ login });
       return !!user;
     } catch (error) {
       throw new Error('Error checking user existence: ' + error.message);
@@ -54,7 +54,7 @@ class UserService {
    */
   async getUserByLogin(login) {
     try {
-      return await DB_COLLECTION_USERS.findOne({ login });
+      return await DB_CONSTS.DB_COLLECTION_USERS.findOne({ login });
     } catch (error) {
       throw new Error('Error retrieving user: ' + error.message);
     }
@@ -66,7 +66,7 @@ class UserService {
    */
   async getAllUsers() {
     try {
-      return await DB_COLLECTION_USERS.find({}).toArray();
+      return await DB_CONSTS.DB_COLLECTION_USERS.find({}).toArray();
     } catch (error) {
       throw new Error('Error retrieving users: ' + error.message);
     }
@@ -80,7 +80,7 @@ class UserService {
    */
   async updateUserPassword(login, newPassword) {
     try {
-      const result = await DB_COLLECTION_USERS.findOneAndUpdate(
+      const result = await DB_CONSTS.DB_COLLECTION_USERS.findOneAndUpdate(
         { login },
         { $set: { password: newPassword } },
         { returnDocument: 'after' }
@@ -92,4 +92,4 @@ class UserService {
   }
 }
 
-module.exports = new UserService();
+module.exports = {UserService};
