@@ -1,11 +1,14 @@
 const path = require("path");
+require('dotenv').config();
 const express = require("express");
 const songsRouter = require("./routes/songs");
 const playlistsRouter = require("./routes/playlists");
 const searchBarRouter = require("./routes/search_bar");
+const authRouter = require('./routes/auth');
 const DB_CONSTS = require("./utils/env");
 const { dbService } = require('./services/database.service');
 const cors = require("cors");
+const { authenticateToken } = require("./middlewares/authMiddleware")
 
 const app = express();
 const PORT = 5020;
@@ -14,24 +17,31 @@ const PUBLIC_PATH = path.join(__dirname);
 
 app.use(cors({ origin: "*" }));
 
-// afficher chaque nouvelle requête dans la console
-app.use((request, response, next) => {
-  console.log(`New HTTP request: ${request.method} ${request.url}`);
-  next();
-});
+// // afficher chaque nouvelle requête dans la console
+// app.use((request, response, next) => {
+//   console.log(`New HTTP request: ${request.method} ${request.url}`);
+//   next();
+// });
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json({ limit: SIZE_LIMIT }));
 app.use(express.static(PUBLIC_PATH));
 
+app.use((req, res, next) => {
+  const publicRoutes = ['/api/auth/login', '/api/auth/register'];
+  if (publicRoutes.includes(req.path)) {
+    return next(); // Skip authentication for public routes
+  }
+  authenticateToken(req, res, next);
+});
+
 app.use("/api/songs", songsRouter.router);
 app.use("/api/playlists", playlistsRouter.router);
 app.use("/api/search", searchBarRouter.router);
+app.use("/api/auth", authRouter);
 
 const server = app.listen(PORT, () => {
   dbService.connectToServer(DB_CONSTS.DB_URL).then(async () => {
-    // TODO : populer la BD avec les valeurs par défaut
-    // eslint-disable-next-line no-console
     await playlistsRouter.playlistService.populateDb();
     await songsRouter.songService.populateDb();
 
