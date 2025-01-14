@@ -37,48 +37,6 @@ router.get("/:id", async (request, response) => {
 });
 
 /**
- * Inscription d'un utilisateur
- * @memberof module:routes/users
- * @name POST /users/register
- */
-router.post("/register", async (request, response) => {
-  try {
-    const { email, password } = request.body;
-    if (!email || !password) {
-      response.status(HTTP_STATUS.BAD_REQUEST).json({ message: "Email and password are required" });
-      return;
-    }
-    const user = await userService.registerUser(email, password);
-    response.status(HTTP_STATUS.CREATED).json(user);
-  } catch (error) {
-    response.status(HTTP_STATUS.SERVER_ERROR).json(error);
-  }
-});
-
-/**
- * Connexion utilisateur
- * @memberof module:routes/users
- * @name POST /users/login
- */
-router.post("/login", async (request, response) => {
-  try {
-    const { email, password } = request.body;
-    if (!email || !password) {
-      response.status(HTTP_STATUS.BAD_REQUEST).json({ message: "Email and password are required" });
-      return;
-    }
-    const token = await userService.loginUser(email, password);
-    if (token) {
-      response.status(HTTP_STATUS.SUCCESS).json({ token });
-    } else {
-      response.status(HTTP_STATUS.UNAUTHORIZED).json({ message: "Invalid email or password" });
-    }
-  } catch (error) {
-    response.status(HTTP_STATUS.SERVER_ERROR).json(error);
-  }
-});
-
-/**
  * Supprimer un utilisateur
  * @memberof module:routes/users
  * @name DELETE /users/:id
