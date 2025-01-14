@@ -41,9 +41,9 @@ router.get("/:id", async (request, response) => {
  * @memberof module:routes/users
  * @name DELETE /users/:id
  */
-router.delete("/:id", async (request, response) => {
+router.delete("/:username", async (request, response) => {
   try {
-    const isDeleted = await userService.deleteUser(request.params.id);
+    const isDeleted = await userService.deleteUser(request.params.username);
     if (isDeleted) {
       response.status(HTTP_STATUS.SUCCESS).json({ message: "User deleted" });
     } else {
