@@ -36,10 +36,10 @@ app.use((req, res, next) => {
   authenticateToken(req, res, next);
 });
 
+app.use("/api/auth", authRouter);
 app.use("/api/songs", songsRouter.router);
 app.use("/api/playlists", playlistsRouter.router);
 app.use("/api/search", searchBarRouter.router);
-app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter.router);
 
 const server = app.listen(PORT, () => {

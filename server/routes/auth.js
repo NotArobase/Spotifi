@@ -37,7 +37,7 @@ router.post('/login', async (req, res) => {
     return res.status(400).json({ error: 'Username and password are required.' });
   }
 
-  const user = await userService.getUserByLogin(username);
+  const user = await userService.getUserByUsername(username);
   if (!user || !(await bcrypt.compare(password, user.password))) {
     return res.status(401).json({ error: 'Invalid username or password.' });
   }
