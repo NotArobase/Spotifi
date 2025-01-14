@@ -54,24 +54,6 @@ router.post("/", async (request, response) => {
   }
 });
 
-/**
- * Mets à jour l'information d'une playlist en fonction de son id
- * @memberof module:routes/playlists
- * @name PUT /playlists/:id
- */
-router.put("/:id", async (request, response) => {
-  try {
-    if (!Object.keys(request.body).length) {
-      response.status(HTTP_STATUS.BAD_REQUEST).send();
-      return;
-    }
-    const playlist = request.body;
-    await playlistService.updatePlaylist(playlist);
-    response.status(HTTP_STATUS.SUCCESS).send({ id: playlist.id });
-  } catch (error) {
-    response.status(HTTP_STATUS.SERVER_ERROR).json(error);
-  }
-});
 
 /**
  * Supprime une playlist en fonction de son id
