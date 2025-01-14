@@ -6,6 +6,7 @@ import About from "./pages/About";
 import Playlist from "./pages/Playlist";
 import "./assets/css/styles.css";
 import NavBar from "./components/NavBar";
+import Header from "./components/Header";
 import Footer from "./components/Footer";
 import CreatePlaylist from "./pages/CreatePlaylist";
 
@@ -20,7 +21,7 @@ function App() {
   ];
 
   return (
-    <div id="container">
+    <><Header /><div id="container">
       <PlaylistProvider>
         <NavBar />
         <Routes>
@@ -31,7 +32,7 @@ function App() {
         </Routes>
         <Footer />
       </PlaylistProvider>
-    </div>
+    </div></>
   );
 }
 
