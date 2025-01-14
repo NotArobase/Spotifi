@@ -1,0 +1,14 @@
+{
+    "name": "spotifi",
+    "version": "1.0.0",
+    "description": "Spotifi back-end",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "author": "LOGIN",
+    "license": "MIT",
+    "dependencies": {
+        "mongodb": "^6.12.0"
+    }
+}

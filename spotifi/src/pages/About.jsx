@@ -4,7 +4,7 @@ export default function About() {
   return (
     <main id="main-area" className="flex-column">
       <section className="flex-column align-center">
-        <h1>PolyPlay</h1>
+        <h1>Spotifi</h1>
         <p>
           Ce projet est un simple gestionnaire de listes de chansons (Playlists)
         </p>
