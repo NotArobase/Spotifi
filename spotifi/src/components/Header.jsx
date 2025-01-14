@@ -7,7 +7,7 @@ const Header = () => {
   return (
     <><header style={styles.header}>
           <h1 style={styles.title}>Spotifi</h1>
-          <Link to="/index" className={location.pathname === "/index" ? "active-page" : ""}>
+          <Link to="/login" className={location.pathname === "/login" ? "active-page" : ""}>
               <button style={styles.loginButton}>
                   Login
               </button>
