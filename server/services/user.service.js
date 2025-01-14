@@ -38,13 +38,13 @@ class UserService {
   }
 
   /**
-   * Delete un user à partir de l'ID
-   * @param {string} userId - The ID of the user to delete
+   * Delete un user à partir du username
+   * @param {string} Username - The username of the user to delete
    * @returns {Promise<boolean>} - True if the user was deleted, false otherwise
    */
-  async deleteUser(userId) {
+  async deleteUser(Username) {
     try {
-      const result = await this.collection.deleteOne({ _id: userId });
+      const result = await this.collection.deleteOne({ username: Username });
       return result.deletedCount > 0;
     } catch (error) {
       throw new Error('Error deleting user: ' + error.message);
