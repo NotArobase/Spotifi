@@ -9,10 +9,12 @@ import NavBar from "./components/NavBar";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import CreatePlaylist from "./pages/CreatePlaylist";
+import Login from "./pages/Login";
 
 function App() {
   const routes = [
     { path: "/index", element: <Index /> },
+    { path: "/login", element: <Login /> },
     { path: "/about", element: <About /> },
     { path: "/playlist/:id", element: <Playlist /> },
     { path: "/create_playlist/:id", element: <CreatePlaylist /> },
