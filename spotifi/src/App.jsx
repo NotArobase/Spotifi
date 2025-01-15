@@ -19,6 +19,7 @@ function App() {
     { path: "/playlist/:id", element: <Playlist /> },
     { path: "/create_playlist/:id", element: <CreatePlaylist /> },
     { path: "/create_playlist", element: <CreatePlaylist /> },
+    { path: "/voting", element: <VotingPage /> },
     { path: "/", element: <Index /> },
   ];
 
