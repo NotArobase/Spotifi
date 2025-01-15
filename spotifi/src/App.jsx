@@ -10,6 +10,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import CreatePlaylist from "./pages/CreatePlaylist";
 import Login from "./pages/Login";
+import VotingPage from "./components/VotingPage";
 
 function App() {
   const routes = [
