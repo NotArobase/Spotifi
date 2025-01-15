@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import { ACTIONS } from "../reducers/reducer";
 import PlaylistContext from "../contexts/PlaylistContext";
-import { SERVER_URL } from "../assets/js/consts";
-import Song from "../components/Song";
 import { NavLink, useParams } from "react-router-dom";
+import Song from "../components/Song";
 
 export default function Playlist() {
   const api = useContext(PlaylistContext).api;
@@ -25,7 +24,6 @@ export default function Playlist() {
     );
     setPlaylist(playlist);
     setSongs(songsToLoad);
-    // TODO : charger les bonnes données dans votre reducer
     dispatch({ type: ACTIONS.LOAD, payload: { songs: songsToLoad } });
   };
 
@@ -33,24 +31,17 @@ export default function Playlist() {
     <main id="main-area" className="flex-column">
       <div id="songs-list">
         <header id="playlist-header" className="flex-row">
-          <img
-            id="playlist-img"
-            width="80px"
-            height="80px"
-            alt=""
-            src={playlist.thumbnail ? `${SERVER_URL}/${playlist.thumbnail}` : ""}
-          />
+          {/* Thumbnail supprimé */}
           <h1 id="playlist-title">{playlist.name}</h1>
           <NavLink id="playlist-edit" to={`/create_playlist/${params.id}`}>
             <i className="fa fa-2x fa-pencil"></i>
           </NavLink>
         </header>
         <section id="song-container" className="flex-column">
-          {/*TODO : afficher toutes les chansons dans la page.
-          Chaque chanson doit avoir un numéro commençant par 1 qui indique son ordre dans la liste*/}
+          {/* Affichage des chansons */}
           {songs.map((song, index) => (
-          <Song key={index} song={song} index={index + 1} />
-        ))}
+            <Song key={index} song={song} index={index + 1} />
+          ))}
         </section>
       </div>
     </main>

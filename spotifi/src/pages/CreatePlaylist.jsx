@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useContext, useRef } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { SERVER_URL } from "../assets/js/consts";
 import PlaylistContext from "../contexts/PlaylistContext";
 import { loadForEdit } from "../assets/js/utils";
 
@@ -14,10 +13,8 @@ export default function CreatePlaylist() {
     name: "",
     description: "",
     songs: [],
-    thumbnail: "",
   });
-  const [preview, setPreview] = useState("");
-  const imageInputRef = useRef(null);
+
   useEffect(() => {
     loadData();
   }, []);
@@ -29,9 +26,8 @@ export default function CreatePlaylist() {
         api.getPlaylistById(params.id).then((playlist) => {
           const songsInPlaylist = playlist.songs.map((song) => getNameFromId(song.id, songs));
           setAddedSongs(songsInPlaylist);
-          setPreview(`${SERVER_URL}/${playlist.thumbnail}`);
           setData(playlist);
-          loadForEdit(playlist, imageInputRef);
+          loadForEdit(playlist);
         });
       }
     });
@@ -40,13 +36,11 @@ export default function CreatePlaylist() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!data.name || !data.description) return;
-    // TODO : envoyer la bonne requête pour ajouter ou modifier une playlist en fonction de l'attribut params.id
     if (params.id) {
       api.updatePlaylist(data);
     } else {
       api.addNewPlaylist(data);
     }
-
     navigate("/index");
   };
 
@@ -79,30 +73,6 @@ export default function CreatePlaylist() {
     return name;
   };
 
-  const getImageInput = async (input, reader = new FileReader()) => {
-    if (input && input.files && input.files[0]) {
-      const image = await new Promise((resolve) => {
-        reader.onload = (e) => resolve(reader.result);
-        reader.readAsDataURL(input.files[0]);
-      });
-      return image;
-    }
-  };
-
-  const handleChangeInput = (event, index) => {
-    const newSongChoises = addedSongs;
-    newSongChoises[index] = event.target.value;
-    setAddedSongs(newSongChoises);
-    const allSongs = addedSongs
-      .map((song) => {
-        const id = getIdFromName(song);
-        if (id !== -1) return { id };
-      })
-      .filter((x) => x !== undefined);
-    setData({ ...data, songs: allSongs });
-  };
-
-  // TODO : Gérer le changement de nom
   const handleNameChange = (event) => {
     setData({ ...data, name: event.target.value });
   };
@@ -111,13 +81,6 @@ export default function CreatePlaylist() {
     setData({ ...data, description: event.target.value });
   };
 
-  const handleFileChange = async (event) => {
-    setPreview(URL.createObjectURL(event.target.files[0]));
-    const image = await getImageInput(event.target);
-    setData({ ...data, thumbnail: image });
-  };
-
-  // TODO : Envoyer une requête de supression au serveur et naviguer vers la page principale
   const deletePlaylist = async (id) => {
     api.deletePlaylist(data.id);
     navigate("/index");
@@ -131,7 +94,6 @@ export default function CreatePlaylist() {
             <legend>Informations générales</legend>
             <div className="form-control flex-row">
               <label htmlFor="name"> Nom: </label>
-              {/*TODO : lier au nom de la playlist */}
               <input
                 type="text"
                 id="name"
@@ -143,7 +105,6 @@ export default function CreatePlaylist() {
             </div>
             <div className="form-control flex-row">
               <label htmlFor="description">Description: </label>
-              {/*TODO : lier à la description de la playlist */}
               <input
                 type="text"
                 id="description"
@@ -153,16 +114,10 @@ export default function CreatePlaylist() {
                 onChange={handleDescriptionChange}
               />
             </div>
-            <div className="form-control flex-row">
-              <label htmlFor="image">Image: </label>
-              <input type="file" id="image" accept="image/*" onChange={handleFileChange} ref={imageInputRef} />
-            </div>
           </fieldset>
-          <img id="image-preview" width="200px" height="200px" alt="" src={preview} />
         </div>
         <fieldset className="form-control">
           <legend>Chansons</legend>
-          {/*TODO : construire les choix de chansons dans des éléments <option> */}
           <datalist id="song-dataList">
             {songs.map((song) => (
               <option key={song.id} value={song.name} />
@@ -187,22 +142,10 @@ export default function CreatePlaylist() {
             ))}
           </div>
         </fieldset>
-        {/*TODO : afficher "Modifier la playlist" ou "Ajouter la playlist" en fonction de l'état du formulaire */}
         {params.id ? (
-        <input
-          type="submit"
-          value={"Modifier la playlist"}
-          onClick={handleSubmit}
-          id="playlist-submit"
-        />
+          <input type="submit" value={"Modifier la playlist"} onClick={handleSubmit} id="playlist-submit" />
         ) : (
-        <input
-          type="submit"
-          value={"Ajouter la playlist"}
-          onClick={handleSubmit}
-          id="playlist-submit"
-        />
-
+          <input type="submit" value={"Ajouter la playlist"} onClick={handleSubmit} id="playlist-submit" />
         )}
       </form>
       {params.id ? (
