@@ -114,7 +114,7 @@ li a:hover,
 
 #timeline {
     accent-color: var(--player-color);
-    flex: 1
+    flex: 1;
 }
 
 .control-btn {
@@ -158,7 +158,7 @@ li a:hover,
 .playlist-play-icon {
     position: absolute;
     bottom: 5px;
-    right: 0px
+    right: 0px;
 }
 
 .playlist-item * {
@@ -188,7 +188,7 @@ li a:hover,
 .song-item {
     justify-content: space-between;
     align-items: center;
-    padding: 0 10px 0 10px;
+    padding: 10px;
     margin-bottom: 2px;
     text-decoration: none;
     color: black;
@@ -196,9 +196,8 @@ li a:hover,
     border-radius: 5px;
 }
 
-
-.song-item>p {
-    flex: 0.25;
+.song-item p {
+    color: var(--text-color);
 }
 
 .song-item:hover {
@@ -241,7 +240,7 @@ li a:hover,
     margin-top: 5px;
     width: 50px;
     height: 50px;
-    color: red ;
+    color: red;
 }
 
 #add-song-btn {
@@ -300,11 +299,79 @@ input#specific-search {
     transition: 0.2s ease-out;
 }
 
-#exact-parent{
+#exact-parent {
     align-items: center;
 }
 
-#exact-search{
+#exact-search {
     width: 20px;
     height: 20px;
+}
+
+/* Mes chansons - Local */
+#local-songs-section {
+    margin-top: 20px;
+}
+
+#local-songs-section h1 {
+    background-color: var(--highlight);
+    /* couleur verte */
+    padding: 10px;
+    border-radius: 3px;
+    font-size: 24px;
+    /* taille du texte identique à "Mes chansons" */
+    color: black;
+    display: inline-block;
+    /* Ajouté pour que le fond se limite au texte */
+}
+
+#local-songs-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 20px;
+}
+
+.song-item {
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 2px;
+    text-decoration: none;
+    color: black;
+    border: 1px solid var(--main-color);
+    border-radius: 5px;
+}
+
+.song-item:hover {
+    border: 2px solid var(--active-color);
+    cursor: pointer;
+}
+
+.song-item p {
+    color: var(--text-color);
+}
+
+#local-songs-list button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+#local-songs-list button:hover {
+    color: var(--player-color);
+}
+
+#access-local-folder {
+    background-color: var(--main-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+#access-local-folder:hover {
+    background-color: var(--active-color);
 }
