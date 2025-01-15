@@ -12,7 +12,7 @@ export const HTTPInterface = {
     const token = this.getAuthToken();
     const response = await fetch(`${this.SERVER_URL}/${endpoint}`, {
       headers: {
-        "Authorization": `Bearer ${token}`, // Add the token to the headers
+        "Authorization": `Bearer ${token}`, // Corrected Authorization header
       },
     });
     return await response.json();
@@ -25,7 +25,7 @@ export const HTTPInterface = {
       body: JSON.stringify(data),
       headers: {
         "content-type": "application/json",
-        "Authorization": Bearer `${token}`, // Add the token to the headers
+        "Authorization": `Bearer ${token}`, // Corrected Authorization header
       },
     });
 
@@ -37,7 +37,7 @@ export const HTTPInterface = {
     const response = await fetch(`${this.SERVER_URL}/${endpoint}`, {
       method: "DELETE",
       headers: {
-        "Authorization": Bearer `${token}`, // Add the token to the headers
+        "Authorization": `Bearer ${token}`, // Corrected Authorization header
       },
     });
     return response.status;
@@ -48,7 +48,7 @@ export const HTTPInterface = {
     const response = await fetch(`${this.SERVER_URL}/${endpoint}`, {
       method: "PATCH",
       headers: {
-        "Authorization": Bearer `${token}`, // Add the token to the headers
+        "Authorization": `Bearer ${token}`, // Corrected Authorization header
       },
     });
     return response.status;
@@ -61,7 +61,7 @@ export const HTTPInterface = {
       body: JSON.stringify(data),
       headers: {
         "content-type": "application/json",
-        "Authorization": Bearer `${token}`, // Add the token to the headers
+        "Authorization": `Bearer ${token}`, // Corrected Authorization header
       },
     });
     return response.status;
@@ -79,103 +79,50 @@ export default class HTTPManager {
     this.searchBaseURL = "search";
   }
 
-  /**
-   * Récupère et retourne toutes les chansons du serveur
-   * @returns {Promise} Liste des chansons
-   */
+  // Fetches all songs from the server
   async fetchAllSongs () {
     const songs = await HTTPInterface.GET(`${this.songsBaseURL}`);
     return songs;
   }
 
-  /**
-   * Récupère et retourne toutes les playlists du serveur
-   * @returns {Promise} Liste des playlists
-   */
+  // Fetches all playlists from the server
   async fetchAllPlaylists () {
     const playlists = await HTTPInterface.GET(`${this.playlistBaseURL}`);
     return playlists;
   }
 
-  /**
-   * Récupère et retourne une chanson du serveur en fonction de son id
-   * @param {number} id identifiant de la chanson
-   * @returns {Promise} une chanson
-   */
+  // Fetches a song from the server based on its ID
   async fetchSong (id) {
     const song = await HTTPInterface.GET(`${this.songsBaseURL}/${id}`);
     return song;
   }
 
-  /**
- * Récupère et retourne un fichier de musique (Blob) du serveur en fonction de son id
- * @param {number} id identifiant de la chanson
- * @returns {Promise} un URL qui représente le fichier de musique
- */
+  // Fetches a song file (Blob) from the server using its file name (src)
   async getSongURLFromId(src) {
     const url = `https://garage.deuxfleurs.fr/audio/${src}`;
-    console.log('Requesting URL:', url); // Add this line
+    console.log('Requesting URL:', url); // For debugging
     const songBlob = await fetch(url);
     const blob = await songBlob.blob();
     return URL.createObjectURL(blob);
   }
 
-
-
-  /**
-   * Effectue une recherche de mot clé sur le serveur et retourne le résultat
-   * Les paramètres sont envoyés dans la query de la requête HTTP sous le format suivant :
-   * search_query=query&exact=exact
-   * Si exact = true, la recherche est sensible à la case
-   * @param {string} query mot clé à rechercher
-   * @param {boolean} exact flag qui indique si la recherche est sensible à la case ou non
-   * @returns{{playlist: [], songs:[]}} le résultat de la recherche sous la forme d'un objet {playlists : [], songs: []}
-   * ou les 2 attributs sont des tableaux avec les playlists et les chansons qui correspondent à la recherche
-   */
+  // Performs a search on the server and returns the result
   async search (query, exact) {
     const searchResults = await HTTPInterface.GET(`${this.searchBaseURL}?search_query=${query}&exact=${exact}`);
     return searchResults;
   }
 
-  /**
-   * @returns {Promise} Liste des chansons
-   */
+  // Get all songs
   async getAllSongs () {
-    const songsPromises = new Promise((resolve, reject) => {
-      try {
-        const songs = this.fetchAllSongs();
-        resolve(songs);
-      } catch (err) {
-        reject("Échec lors de la requête GET /api/songs");
-      }
-    });
-
-    const songsReceived = Promise.resolve(songsPromises);
-    return songsReceived;
+    return await this.fetchAllSongs(); // Directly returning the promise
   }
 
-  /**
-   * @returns {Promise} Liste des playlists
-   */
+  // Get all playlists
   async getAllPlaylists () {
-    const playlistsPromises = new Promise((resolve, reject) => {
-      try {
-        const playlists = this.fetchAllPlaylists();
-        resolve(playlists);
-      } catch (err) {
-        reject("Échec lors de la requête GET /api/playlists");
-      }
-    });
-
-    const playlistsReceived = Promise.resolve(playlistsPromises);
-    return playlistsReceived;
+    return await this.fetchAllPlaylists(); // Directly returning the promise
   }
 
-  /**
-   * Récupère et retourne une playlist du serveur en fonction de son id
-   * @param {number} id Id de la playlist
-   * @returns {Promise} Playlist correspondant à l'id
-   */
+  // Fetch a playlist by ID
   async getPlaylistById (id) {
     try {
       const playlist = await HTTPInterface.GET(`${this.playlistBaseURL}/${id}`);
@@ -185,51 +132,39 @@ export default class HTTPManager {
     }
   }
 
-  /**
-   * Ajoute une nouvelle playlist sur le serveur à travers une requête
-   * @param {Object} playlist playlist à envoyer au serveur
-   */
+  // Add a new playlist to the server
   async addNewPlaylist (playlist) {
     try {
       await HTTPInterface.POST(`${this.playlistBaseURL}`, playlist);
     } catch (err) {
-      window.alert("An error has occured while adding a new playlist", err);
+      window.alert("An error has occurred while adding a new playlist", err);
     }
   }
 
-  /**
-   * Modifie une playlist en envoyant un objet avec les nouvelles valeurs au serveur
-   * @param {Object} playlist playlist à envoyer au serveur
-   */
+  // Update an existing playlist on the server
   async updatePlaylist (playlist) {
     try {
       await HTTPInterface.PUT(`${this.playlistBaseURL}/${playlist.id}`, playlist);
     } catch (err) {
-      window.alert("An error has occured while adding a new playlist", err);
+      window.alert("An error has occurred while updating the playlist", err);
     }
   }
 
-  /**
-   * Supprime une playlist sur le serveur à travers une requête
-   * @param {string} id identifiant de la playlist à supprimer
-   */
+  // Delete a playlist from the server
   async deletePlaylist (id) {
     try {
       await HTTPInterface.DELETE(`${this.playlistBaseURL}/${id}`);
     } catch (err) {
-      window.alert("An error has occured while deleting a playlist", err);
+      window.alert("An error has occurred while deleting the playlist", err);
     }
   }
 
-  /**
-   * Modifie l'état aimé d'une chanson
-   * @param {number} id identifiant de la chanson à modifier
-   */
+  // Update the like status of a song
   async updateSong (id) {
     try {
       await HTTPInterface.PATCH(`${this.songsBaseURL}/${id}/like`);
     } catch (err) {
-      window.alert("An error has occured while trying to change a song status", err);
+      window.alert("An error has occurred while trying to change the song status", err);
     }
   }
 }
