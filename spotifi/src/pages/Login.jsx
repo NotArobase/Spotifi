@@ -23,11 +23,11 @@ const LoginPage = () => {
         throw new Error(data.error || 'Login failed.');
       }
 
-      // Save the token to localStorage
       localStorage.setItem('authToken', data.token);
 
       // Redirect to home page or dashboard
       navigate('/');
+      window.location.reload();
     } catch (err) {
       setError(err.message);
     }

@@ -11,32 +11,46 @@ import Footer from "./components/Footer";
 import CreatePlaylist from "./pages/CreatePlaylist";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   const routes = [
-    { path: "/index", element: <Index /> },
-    { path: "/login", element: <Login /> },
-    { path: "/register", element: <Register /> },
-    { path: "/about", element: <About /> },
-    { path: "/playlist/:id", element: <Playlist /> },
-    { path: "/create_playlist/:id", element: <CreatePlaylist /> },
-    { path: "/create_playlist", element: <CreatePlaylist /> },
-    { path: "/", element: <Index /> },
+    { path: "/", element: <Index />, protected: true },
+    { path: "/index", element: <Index />, protected: true },
+    { path: "/login", element: <Login />, protected: false },
+    { path: "/register", element: <Register />, protected: false },
+    { path: "/about", element: <About />, protected: true },
+    { path: "/playlist/:id", element: <Playlist />, protected: true },
+    { path: "/create_playlist/:id", element: <CreatePlaylist />, protected: true },
+    { path: "/create_playlist", element: <CreatePlaylist />, protected: true },
   ];
 
   return (
-    <><Header /><div id="container">
-      <PlaylistProvider>
-        <NavBar />
-        <Routes>
-          {/* TODO : Configurer les routes et leurs components à afficher */}
-          {routes.map((route, index) => (
-            <Route key={index} path={route.path} element={route.element} />
-          ))}
-        </Routes>
-        <Footer />
-      </PlaylistProvider>
-    </div></>
+    <>
+    <AuthProvider>
+      <Header />
+      <div id="container">
+          <PlaylistProvider>
+            <NavBar />
+            <Routes>
+              {routes.map((route, index) => {
+                return route.protected ? (
+                  <Route
+                    key={index}
+                    path={route.path}
+                    element={<ProtectedRoute>{route.element}</ProtectedRoute>}
+                  />
+                ) : (
+                  <Route key={index} path={route.path} element={route.element} />
+                );
+              })}
+            </Routes>
+            <Footer />
+          </PlaylistProvider>
+      </div>
+    </AuthProvider>
+    </>
   );
 }
 

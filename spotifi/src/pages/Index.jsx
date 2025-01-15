@@ -4,24 +4,30 @@ import PlaylistContext from "../contexts/PlaylistContext";
 import Song from "../components/Song";
 import SearchBar from "../components/SearchBar";
 
-export default function Index() {
-  const api = useContext(PlaylistContext).api;
-  const [playlists, setPlaylists] = useState([]);
-  const [songs, setSongs] = useState([]);
-  const [localSongs, setLocalSongs] = useState([]); // Nouvel état pour les chansons locales
+export default function Index() {// Nouvel état pour les chansons locales
 
-  useEffect(() => {
-    api
-      .fetchAllPlaylists()
-      .then((playlists) => setPlaylists(playlists))
-      .catch(() => setPlaylists([]));
-
-    // TODO : récupérer les chansons du serveur
-    api
-      .fetchAllSongs()
-      .then((songs) => setSongs(songs))
-      .catch(() => setSongs([]));
-  }, []);
+    const api = useContext(PlaylistContext).api;
+    const [playlists, setPlaylists] = useState([]);
+    const [songs, setSongs] = useState([]);
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const fetchedPlaylists = await api.fetchAllPlaylists();
+          setPlaylists(Array.isArray(fetchedPlaylists) ? fetchedPlaylists : []);
+        } catch (error) {
+          console.error('Failed to fetch playlists:', error);
+          setPlaylists([]);
+        }
+        try {
+          const fetchedSongs = await api.fetchAllSongs();
+          setSongs(Array.isArray(fetchedSongs) ? fetchedSongs : []);
+        } catch (error) {
+          console.error('Failed to fetch songs:', error);
+          setSongs([]);
+        }
+      };
+      fetchData();
+    }, [api]);
 
   const handleSearch = async (event, query, exactMatch) => {
     event.preventDefault();

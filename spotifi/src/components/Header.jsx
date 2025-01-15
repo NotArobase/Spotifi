@@ -1,27 +1,43 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link, useLocation } from "react-router-dom";
+import { AuthContext } from '../contexts/AuthContext';
 
 const Header = () => {
   const location = useLocation();
+  const { isAuthenticated } = useContext(AuthContext);
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    window.location.reload();
+  };
 
   return (
     <><header style={styles.header}>
           <h1 style={styles.title}>Spotifi</h1>
-          <Link to="/login" className={location.pathname === "/login" ? "active-page" : ""}>
-              <button style={styles.loginButton}>
+          <div>
+            {!isAuthenticated ? (
+              <>
+                <Link to="/login" className={location.pathname === "/login" ? "active-page" : ""}>
+                <button style={styles.loginButton}>
                   Login
-              </button>
-          </Link>
-          <Link to="/register" className={location.pathname === "/register" ? "active-page" : ""}>
-              <button style={styles.loginButton}>
+                </button>
+                </Link>
+                <Link to="/register" className={location.pathname === "/register" ? "active-page" : ""}>
+                <button style={styles.loginButton}>
                   Register
+                </button>
+                </Link>
+              </>
+            ) : (
+              <button onClick={handleLogout} style={styles.loginButton}>
+                Logout
               </button>
-          </Link>
+            )}
+          </div>
       </header></>
   );
 };
 
-// Inline styling
 const styles = {
   header: {
     position: 'top',
@@ -42,7 +58,7 @@ const styles = {
   },
   loginButton: {
     backgroundColor: 'rgb(101, 224, 115)',
-    border: 'none',
+    border: '10px',
     padding: '10px 20px',
     borderRadius: '5px',
     cursor: 'pointer',
