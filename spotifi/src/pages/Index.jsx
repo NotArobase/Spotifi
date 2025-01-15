@@ -10,16 +10,24 @@ import SearchBar from "../components/SearchBar";
     const [playlists, setPlaylists] = useState([]);
     const [songs, setSongs] = useState([]);
     useEffect(() => {
-      api
-        .fetchAllPlaylists()
-        .then((playlists) => setPlaylists(playlists))
-        .catch(() => setPlaylists([]));
-      // TODO : récupérer les chansons du serveur
-      api
-        .fetchAllSongs()
-        .then((songs) => setSongs(songs))
-        .catch(() => setSongs([]));
-    }, []);
+      const fetchData = async () => {
+        try {
+          const fetchedPlaylists = await api.fetchAllPlaylists();
+          setPlaylists(Array.isArray(fetchedPlaylists) ? fetchedPlaylists : []); // Ensure playlists is an array
+        } catch (error) {
+          console.error('Failed to fetch playlists:', error);
+          setPlaylists([]); // Reset playlists to an empty array on error
+        }
+        try {
+          const fetchedSongs = await api.fetchAllSongs();
+          setSongs(Array.isArray(fetchedSongs) ? fetchedSongs : []); // Ensure songs is an array
+        } catch (error) {
+          console.error('Failed to fetch songs:', error);
+          setSongs([]); // Reset songs to an empty array on error
+        }
+      };
+      fetchData();
+    }, [api]);
 
   /**
    * TODO : implémenter la recherche et la mise à jour de l'interface
