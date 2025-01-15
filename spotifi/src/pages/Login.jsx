@@ -24,7 +24,7 @@ const LoginPage = () => {
       }
 
       // Save the token to localStorage
-      localStorage.setItem('token', data.token);
+      localStorage.setItem('authToken', data.token);
 
       // Redirect to home page or dashboard
       navigate('/');
