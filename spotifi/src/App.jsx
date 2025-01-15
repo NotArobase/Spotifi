@@ -16,11 +16,11 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   const routes = [
-    { path: "/", element: <Index />, protected: false },
-    { path: "/index", element: <Index />, protected: false },
+    { path: "/", element: <Index />, protected: true },
+    { path: "/index", element: <Index />, protected: true },
     { path: "/login", element: <Login />, protected: false },
     { path: "/register", element: <Register />, protected: false },
-    { path: "/about", element: <About />, protected: false },
+    { path: "/about", element: <About />, protected: true },
     { path: "/playlist/:id", element: <Playlist />, protected: true },
     { path: "/create_playlist/:id", element: <CreatePlaylist />, protected: true },
     { path: "/create_playlist", element: <CreatePlaylist />, protected: true },
