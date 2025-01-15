@@ -14,18 +14,23 @@ const VotingPage = () => {
 
   const fetchAvailableSongs = async () => {
     try {
+      const token = localStorage.getItem('authToken'); // Update key to match localStorage
+      if (!token) throw new Error('No token found in local storage');
+  
       const response = await fetch(`${SERVER_URL}/api/voting/songs`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
-      
+  
       if (!response.ok) throw new Error('Failed to fetch songs');
-      
+  
       const data = await response.json();
+      console.log(data); // Ensure data is logged correctly
       setSongs(data);
       setLoading(false);
     } catch (err) {
+      console.error('Error during fetch:', err.message);
       setError('Failed to load songs. Please try again later.');
       setLoading(false);
     }
