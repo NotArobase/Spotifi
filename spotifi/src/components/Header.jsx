@@ -12,6 +12,11 @@ const Header = () => {
                   Login
               </button>
           </Link>
+          <Link to="/register" className={location.pathname === "/register" ? "active-page" : ""}>
+              <button style={styles.loginButton}>
+                  Register
+              </button>
+          </Link>
       </header></>
   );
 };

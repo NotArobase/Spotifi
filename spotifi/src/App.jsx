@@ -10,11 +10,13 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import CreatePlaylist from "./pages/CreatePlaylist";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 function App() {
   const routes = [
     { path: "/index", element: <Index /> },
     { path: "/login", element: <Login /> },
+    { path: "/register", element: <Register /> },
     { path: "/about", element: <About /> },
     { path: "/playlist/:id", element: <Playlist /> },
     { path: "/create_playlist/:id", element: <CreatePlaylist /> },
