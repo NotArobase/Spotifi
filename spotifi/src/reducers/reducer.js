@@ -11,6 +11,7 @@ export const ACTIONS = {
   SCRUB: "scrub",
   SHUFFLE: "shuffle",
   MUTE: "mute",
+  LOOP: "TOGGLE_LOOP",
 };
 
 const httpManager = new HTTPManager();
@@ -91,6 +92,14 @@ export default function reducer(state, action) {
       return { ...state, mute: muteToggle() };
     case ACTIONS.SHUFFLE:
       return { ...state, shuffle: !state.shuffle };
+    case ACTIONS.TOGGLE_LOOP:
+      const nextLoopMode =
+        state.loopMode === "none"
+          ? "single"
+          : state.loopMode === "single"
+          ? "playlist"
+          : "none";
+        return { ...state, loopMode: nextLoopMode };
     default:
       return state;
   }

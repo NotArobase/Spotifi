@@ -10,6 +10,7 @@ export const SHORTCUTS = {
   GO_FORWARD: "l",
   GO_BACK: "j",
   MUTE: "m",
+  Loop: "rep"
 };
 
 export const SERVER_URL = "http://localhost:5020";
