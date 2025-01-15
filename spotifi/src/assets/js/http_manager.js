@@ -3,17 +3,29 @@ import { SERVER_URL } from "./consts.js";
 export const HTTPInterface = {
   SERVER_URL: `${SERVER_URL}/api`,
 
+  // Helper function to get the token
+  getAuthToken: function () {
+    return localStorage.getItem("authToken"); // Or use sessionStorage or another secure mechanism
+  },
+
   GET: async function (endpoint) {
-    const response = await fetch(`${this.SERVER_URL}/${endpoint}`);
+    const token = this.getAuthToken();
+    const response = await fetch(`${this.SERVER_URL}/${endpoint}`, {
+      headers: {
+        "Authorization": `Bearer ${token}`, // Add the token to the headers
+      },
+    });
     return await response.json();
   },
 
   POST: async function (endpoint, data) {
+    const token = this.getAuthToken();
     const response = await fetch(`${this.SERVER_URL}/${endpoint}`, {
       method: "POST",
       body: JSON.stringify(data),
       headers: {
         "content-type": "application/json",
+        "Authorization": `Bearer ${token}`, // Add the token to the headers
       },
     });
 
@@ -21,25 +33,35 @@ export const HTTPInterface = {
   },
 
   DELETE: async function (endpoint) {
+    const token = this.getAuthToken();
     const response = await fetch(`${this.SERVER_URL}/${endpoint}`, {
       method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`, // Add the token to the headers
+      },
     });
     return response.status;
   },
 
   PATCH: async function (endpoint) {
+    const token = this.getAuthToken();
     const response = await fetch(`${this.SERVER_URL}/${endpoint}`, {
       method: "PATCH",
+      headers: {
+        "Authorization": `Bearer ${token}`, // Add the token to the headers
+      },
     });
     return response.status;
   },
 
   PUT: async function (endpoint, data) {
+    const token = this.getAuthToken();
     const response = await fetch(`${this.SERVER_URL}/${endpoint}`, {
       method: "PUT",
       body: JSON.stringify(data),
       headers: {
         "content-type": "application/json",
+        "Authorization": `Bearer ${token}`, // Add the token to the headers
       },
     });
     return response.status;
