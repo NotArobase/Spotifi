@@ -24,7 +24,7 @@ export default function reducer(state, action) {
     }
     const song = state.songs[index];
     state.audio.load();
-    const url = await httpManager.getSongURLFromId(song.id);
+    const url = await httpManager.getSongURLFromId(song.src);
     state.audio.src = url;
     state.audio.play();
     return index;

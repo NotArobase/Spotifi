@@ -108,15 +108,19 @@ export default class HTTPManager {
   }
 
   /**
-   * Récupère et retourne un fichier de musique (Blob) du serveur en fonction de son id
-   * @param {number} id identifiant de la chanson
-   * @returns {Promise} un URL qui représente le fichier de musique
-   */
-  async getSongURLFromId (id) {
-    const songBlob = await fetch(`${HTTPInterface.SERVER_URL}/${this.songsBaseURL}/${this.songFileBaseURL}/${id}`);
-    const url = URL.createObjectURL(await songBlob.blob());
-    return url;
+ * Récupère et retourne un fichier de musique (Blob) du serveur en fonction de son id
+ * @param {number} id identifiant de la chanson
+ * @returns {Promise} un URL qui représente le fichier de musique
+ */
+  async getSongURLFromId(src) {
+    const url = `https://garage.deuxfleurs.fr/audio/${src}`;
+    console.log('Requesting URL:', url); // Add this line
+    const songBlob = await fetch(url);
+    const blob = await songBlob.blob();
+    return URL.createObjectURL(blob);
   }
+
+
 
   /**
    * Effectue une recherche de mot clé sur le serveur et retourne le résultat
