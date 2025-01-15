@@ -26,6 +26,7 @@ function App() {
     { path: "/create_playlist/:id", element: <CreatePlaylist />, protected: true },
     { path: "/create_playlist", element: <CreatePlaylist />, protected: true },
     { path: "/faq", element: <Faq />, protected: true },
+    { path: "/voting", element: <VotingPage />, protected: true },
   ];
 
   return (

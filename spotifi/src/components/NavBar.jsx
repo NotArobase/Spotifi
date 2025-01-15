@@ -24,6 +24,12 @@ export default function NavBar() {
             </Link>
           </li>
           <li>
+            <Link to="/voting" className={location.pathname === "/voting" ? "active-page" : ""}>
+              <i className="fa fa-check-circle"></i>
+              <span>Vote for Songs</span>
+            </Link>
+          </li>
+          <li>
             {/*TODO : ajouter le lien de navigation vers la page /create_playlist */}
             <Link to="/about" className={location.pathname === "/about" ? "active-page" : ""}>
               <i className="fa fa-info-circle"></i>
