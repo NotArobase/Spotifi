@@ -13,17 +13,17 @@ import SearchBar from "../components/SearchBar";
       const fetchData = async () => {
         try {
           const fetchedPlaylists = await api.fetchAllPlaylists();
-          setPlaylists(Array.isArray(fetchedPlaylists) ? fetchedPlaylists : []); // Ensure playlists is an array
+          setPlaylists(Array.isArray(fetchedPlaylists) ? fetchedPlaylists : []);
         } catch (error) {
           console.error('Failed to fetch playlists:', error);
-          setPlaylists([]); // Reset playlists to an empty array on error
+          setPlaylists([]);
         }
         try {
           const fetchedSongs = await api.fetchAllSongs();
-          setSongs(Array.isArray(fetchedSongs) ? fetchedSongs : []); // Ensure songs is an array
+          setSongs(Array.isArray(fetchedSongs) ? fetchedSongs : []);
         } catch (error) {
           console.error('Failed to fetch songs:', error);
-          setSongs([]); // Reset songs to an empty array on error
+          setSongs([]);
         }
       };
       fetchData();
