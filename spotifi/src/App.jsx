@@ -3,6 +3,7 @@ import React from 'react';
 import PlaylistProvider from "./contexts/PlaylistProvider";
 import Index from "./pages/Index";
 import About from "./pages/About";
+import Faq from "./pages/Faq";
 import Playlist from "./pages/Playlist";
 import "./assets/css/styles.css";
 import NavBar from "./components/NavBar";
@@ -24,6 +25,7 @@ function App() {
     { path: "/playlist/:id", element: <Playlist />, protected: true },
     { path: "/create_playlist/:id", element: <CreatePlaylist />, protected: true },
     { path: "/create_playlist", element: <CreatePlaylist />, protected: true },
+    { path: "/faq", element: <Faq />, protected: true },
   ];
 
   return (

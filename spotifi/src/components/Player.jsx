@@ -46,6 +46,11 @@ export default function Player() {
     dispatch({ type: ACTIONS.SHUFFLE });
   };
 
+  // ajouter une action pour activer ou désactiver Le loop
+  const loopToggle = () => {
+    dispatch({ type: ACTIONS.TOGGLE_LOOP });
+  };
+
   const shortcutHandler = (event) => {
     if (shortcuts.has(event.key)) {
       shortcuts.get(event.key)();
@@ -60,6 +65,7 @@ export default function Player() {
     shortcuts.set(SHORTCUTS.NEXT_SONG, () => playNextSong());
     shortcuts.set(SHORTCUTS.PREVIOUS_SONG, () => playPreviousSong());
     shortcuts.set(SHORTCUTS.MUTE, () => muteToggle());
+    shortcuts.set(SHORTCUTS.Loop, () => loopToggle());
 
     document.addEventListener("keydown", shortcutHandler);
   };
@@ -72,7 +78,14 @@ export default function Player() {
     });
 
     state.audio.addEventListener("ended", () => {
+      if (state.loopMode === "single") {
+      // Rejoue la chanson actuelle
+      state.audio.currentTime = 0;
+      state.audio.play();
+      } else if (state.loopMode === "playlist") {
+      // Passe à la chanson suivante ou revient au début
       playNextSong();
+      }
     });
 
     bindShortcuts();
@@ -81,7 +94,7 @@ export default function Player() {
       document.removeEventListener("keydown", shortcutHandler);
       dispatch({ type: ACTIONS.STOP }); // On arrête le son lorsque le component n'est plus présent
     };
-  }, []);
+  }, [state.loopMode]);
   return (
     <>
       <div id="now-playing">On joue : {state.currentSong}</div>
@@ -116,6 +129,19 @@ export default function Player() {
             id="mute"
             onClick={() => {
               muteToggle();
+            }}
+          ></button>
+          <button
+            className={`control-btn fa fa-2x ${
+              state.loopMode === "single"
+                ? "fa-repeat-1"
+                : state.loopMode === "playlist"
+                ? "fa-repeat"
+                : "fa-ban"
+              }`}
+            id="loop"
+            onClick={() => {
+              toggleLoop();
             }}
           ></button>
         </section>
