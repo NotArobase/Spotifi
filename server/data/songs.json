@@ -1,10 +1,10 @@
-{ 
-  "songs" : [
+{
+  "songs": [
     {
       "id": 0,
       "name": "Whip",
       "artist": "prazkhanal",
-      "src": "./assets/media/01_song.mp3",
+      "src": "01_song.mp3",
       "genre": "Electronic",
       "liked": false
     },
@@ -12,7 +12,7 @@
       "id": 1,
       "name": "Overflow",
       "artist": "Piano Amor",
-      "src": "./assets/media/02_song.mp3",
+      "src": "02_song.mp3",
       "genre": "Classic",
       "liked": false
     },
@@ -21,7 +21,7 @@
       "name": "Intrigue Fun",
       "artist": "Music Town",
       "genre": "Jazz",
-      "src": "./assets/media/03_song.mp3",
+      "src": "03_song.mp3",
       "liked": true
     },
     {
@@ -29,7 +29,7 @@
       "name": "Bounce",
       "artist": "Coma-Media",
       "genre": "Electronic",
-      "src": "./assets/media/04_song.mp3",
+      "src": "04_song.mp3",
       "liked": false
     },
     {
@@ -37,9 +37,8 @@
       "name": "Summer Pranks",
       "artist": "Lemon Music Studio",
       "genre": "Rock",
-      "src": "./assets/media/05_song.mp3",
+      "src": "05_song.mp3",
       "liked": true
     }
   ]
 }
-  
