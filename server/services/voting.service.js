@@ -11,7 +11,7 @@ class VotingService {
   }
 
   get songsCollection() {
-    return this.dbService.db.collection(DB_CONSTS.DB_COLLECTION_SONGS);
+    return this.dbService.db.collection('potentialSongs'); 
   }
 
   async castVote(userId, songId) {
