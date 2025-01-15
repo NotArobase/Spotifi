@@ -9,6 +9,8 @@ export default function Index() {// Nouvel état pour les chansons locales
     const api = useContext(PlaylistContext).api;
     const [playlists, setPlaylists] = useState([]);
     const [songs, setSongs] = useState([]);
+    const [localSongs, setLocalSongs] = useState([]);
+
     useEffect(() => {
       const fetchData = async () => {
         try {
