@@ -43,7 +43,7 @@ const VotingPage = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
         },
         body: JSON.stringify({ songId }),
       });
@@ -101,11 +101,15 @@ const VotingPage = () => {
             className="bg-white p-4 rounded-lg shadow-lg hover:shadow-xl cursor-pointer transition-all transform hover:scale-105"
             onClick={() => castVote(song._id)}
           >
-            <img
-              src={song.thumbnail}
-              alt={`${song.name} thumbnail`}
-              className="w-full h-48 object-cover rounded-lg mb-4"
-            />
+            <div className="playlist-preview relative">
+              {/* Update image source handling like Playlist */}
+              <img
+                alt={`${song.name} thumbnail`}
+                src={`${SERVER_URL}/${song.thumbnail}`} // Using the same image handling method
+                className="w-full h-48 object-cover rounded-lg mb-4"
+              />
+              <i className="fa fa-2x fa-play-circle hidden playlist-play-icon absolute top-0 right-0 m-4"></i>
+            </div>
             <div className="text-center">
               <h3 className="text-xl font-semibold text-gray-800">{song.name}</h3>
               <p className="text-gray-600">{song.artist}</p>
