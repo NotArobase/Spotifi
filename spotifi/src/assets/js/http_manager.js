@@ -70,56 +70,50 @@ export const HTTPInterface = {
 
 export default class HTTPManager {
   constructor() {
-    this.songsBaseURL = "audio";
+    this.songStorageURL = `${SONG_SERVER_URL}/audio`; // Base URL for songs
     this.playlistBaseURL = "playlists";
     this.searchBaseURL = "search";
-    this.songStorageURL = SONG_SERVER_URL; // Use SONG_SERVER_URL from consts.js
   }
 
   /**
-   * Récupère et retourne toutes les chansons du serveur
+   * Récupère et retourne toutes les chansons
    * @returns {Promise} Liste des chansons
    */
   async fetchAllSongs() {
-    const songs = await HTTPInterface.GET(`${this.songsBaseURL}`);
-    return songs;
+    const response = await fetch(this.songStorageURL);
+    return await response.json();
   }
 
   /**
-   * Récupère et retourne toutes les playlists du serveur
-   * @returns {Promise} Liste des playlists
-   */
-  async fetchAllPlaylists() {
-    const playlists = await HTTPInterface.GET(`${this.playlistBaseURL}`);
-    return playlists;
-  }
-
-  /**
-   * Récupère et retourne une chanson du serveur en fonction de son id
+   * Récupère et retourne une chanson par son id
    * @param {number} id Identifiant de la chanson
    * @returns {Promise} Une chanson
    */
   async fetchSong(id) {
-    const song = await HTTPInterface.GET(`${this.songsBaseURL}/${id}`);
-    return song;
+    const response = await fetch(`${this.songStorageURL}/${id}.mp3`);
+    if (response.ok) {
+      return await response.blob(); // Retourne la chanson sous forme de Blob
+    } else {
+      throw new Error(`Erreur lors de la récupération de la chanson avec l'id ${id}`);
+    }
   }
 
   /**
    * Récupère et retourne un URL qui représente le fichier de musique
    * @param {number} id Identifiant de la chanson
-   * @returns {Promise} Un URL qui représente le fichier de musique
+   * @returns {Promise} URL du fichier de musique
    */
   async getSongURLFromId(id) {
-    // Construct the URL dynamically using SONG_SERVER_URL
-    const url = `${this.songStorageURL}/${this.songsBaseURL}/${id}.mp3`;
+    const blob = await this.fetchSong(id);
+    const url = URL.createObjectURL(blob);
     return url;
   }
 
   /**
-   * Effectue une recherche de mot clé sur le serveur et retourne le résultat
+   * Effectue une recherche de mot clé sur les playlists et retourne le résultat
    * @param {string} query Mot clé à rechercher
    * @param {boolean} exact Flag indiquant si la recherche est sensible à la casse
-   * @returns {{playlist: [], songs:[]}} Résultat de la recherche
+   * @returns {{playlist: [], songs: []}} Résultat de la recherche
    */
   async search(query, exact) {
     const searchResults = await HTTPInterface.GET(`${this.searchBaseURL}?search_query=${query}&exact=${exact}`);
@@ -127,98 +121,45 @@ export default class HTTPManager {
   }
 
   /**
-   * @returns {Promise} Liste des chansons
-   */
-  async getAllSongs() {
-    const songsPromises = new Promise((resolve, reject) => {
-      try {
-        const songs = this.fetchAllSongs();
-        resolve(songs);
-      } catch (err) {
-        reject("Échec lors de la requête GET /api/songs");
-      }
-    });
-
-    const songsReceived = Promise.resolve(songsPromises);
-    return songsReceived;
-  }
-
-  /**
    * @returns {Promise} Liste des playlists
    */
-  async getAllPlaylists() {
-    const playlistsPromises = new Promise((resolve, reject) => {
-      try {
-        const playlists = this.fetchAllPlaylists();
-        resolve(playlists);
-      } catch (err) {
-        reject("Échec lors de la requête GET /api/playlists");
-      }
-    });
-
-    const playlistsReceived = Promise.resolve(playlistsPromises);
-    return playlistsReceived;
+  async fetchAllPlaylists() {
+    return await HTTPInterface.GET(this.playlistBaseURL);
   }
 
   /**
-   * Récupère et retourne une playlist du serveur en fonction de son id
-   * @param {number} id Id de la playlist
-   * @returns {Promise} Playlist correspondant à l'id
-   */
-  async getPlaylistById(id) {
-    try {
-      const playlist = await HTTPInterface.GET(`${this.playlistBaseURL}/${id}`);
-      return playlist;
-    } catch (err) {
-      window.alert(err);
-    }
-  }
-
-  /**
-   * Ajoute une nouvelle playlist sur le serveur à travers une requête
+   * Ajoute une nouvelle playlist
    * @param {Object} playlist Playlist à envoyer au serveur
    */
   async addNewPlaylist(playlist) {
     try {
-      await HTTPInterface.POST(`${this.playlistBaseURL}`, playlist);
+      await HTTPInterface.POST(this.playlistBaseURL, playlist);
     } catch (err) {
-      window.alert("An error has occurred while adding a new playlist", err);
+      window.alert("An error occurred while adding a new playlist", err);
     }
   }
 
   /**
-   * Modifie une playlist en envoyant un objet avec les nouvelles valeurs au serveur
+   * Modifie une playlist
    * @param {Object} playlist Playlist à envoyer au serveur
    */
   async updatePlaylist(playlist) {
     try {
       await HTTPInterface.PUT(`${this.playlistBaseURL}/${playlist.id}`, playlist);
     } catch (err) {
-      window.alert("An error has occurred while updating the playlist", err);
+      window.alert("An error occurred while updating the playlist", err);
     }
   }
 
   /**
-   * Supprime une playlist sur le serveur à travers une requête
+   * Supprime une playlist
    * @param {string} id Identifiant de la playlist à supprimer
    */
   async deletePlaylist(id) {
     try {
       await HTTPInterface.DELETE(`${this.playlistBaseURL}/${id}`);
     } catch (err) {
-      window.alert("An error has occurred while deleting the playlist", err);
-    }
-  }
-
-  /**
-   * Modifie l'état aimé d'une chanson
-   * @param {number} id Identifiant de la chanson à modifier
-   */
-  async updateSong(id) {
-    try {
-      await HTTPInterface.PATCH(`${this.songsBaseURL}/${id}/like`);
-    } catch (err) {
-      window.alert("An error has occurred while trying to change the song status", err);
+      window.alert("An error occurred while deleting the playlist", err);
     }
   }
 }
