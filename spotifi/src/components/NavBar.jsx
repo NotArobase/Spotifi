@@ -30,6 +30,13 @@ export default function NavBar() {
               <span>À Propos</span>
             </Link>
           </li>
+          <li>
+            {/*TODO : ajouter le lien de navigation vers la page /create_playlist */}
+            <Link to="/faq" className={location.pathname === "/faq" ? "active-page" : ""}>
+              <i className="fa fa-plus"></i>
+              <span>FAQ</span>
+            </Link>
+          </li>
         </ul>
       </nav>
     </header>
