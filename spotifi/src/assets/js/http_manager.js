@@ -111,7 +111,7 @@ export default class HTTPManager {
    */
   async getSongURLFromId(id) {
     // Construct the URL dynamically using SONG_SERVER_URL
-    const url = `${this.songStorageURL}/${id}.mp3`;
+    const url = `${this.songStorageURL}/${this.songsBaseURL}/${id}.mp3`;
     return url;
   }
 

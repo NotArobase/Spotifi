@@ -13,4 +13,4 @@ export const SHORTCUTS = {
 };
 
 export const SERVER_URL = "http://localhost:5020";
-export const SONG_SERVER_URL = "https://garage.deuxfleurs.fr";
+export const SONG_SERVER_URL = "https://spotifi.web.deuxfleurs.fr";
