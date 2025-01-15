@@ -73,6 +73,60 @@ class SongService {
     const songs = JSON.parse(await this.fileSystemManager.readFile(this.JSON_PATH)).songs;
     await this.dbService.populateDb(DB_CONSTS.DB_COLLECTION_SONGS, songs);
   }
+
+    /**
+   * Génère un identifiant unique incrémental pour une chanson.
+   * @returns {Promise<number>} L'ID généré (0, 1, 2, ...)
+   */
+  async generateSimpleId() {
+    const lastSong = await this.collection
+      .find({})
+      .sort({ id: -1 }) // Trier par ID décroissant
+      .limit(1)
+      .toArray();
+
+    if (lastSong.length === 0) {
+      return 0; // Premier ID si la collection est vide
+    }
+
+    return lastSong[0].id + 1; // Incrémenter l'ID le plus élevé
+  }
+
+
+    /**
+   * Ajoute une nouvelle chanson dans la base de données avec un ID incrémental.
+   * @param {Object} song Les métadonnées de la chanson (name, path, etc.)
+   * @returns {Promise<Object>} La chanson insérée
+   */
+  async addSong(song) {
+    // Check if the song already exists based on its name or other unique attribute
+    const existingSong = await this.collection.findOne({ name: song.name });
+
+    if (existingSong) {
+      // If the song already exists, skip adding it (no error raised)
+      console.log(`Song '${song.name}' already exists, skipping.`);
+      return null; // You can return null or the existing song if you prefer
+    }
+
+    const id = await this.generateSimpleId(); // Generate an incremental ID
+    const songWithId = { ...song, id }; // Add the ID to the song object
+
+    // Insert the song into the collection
+    const result = await this.collection.insertOne(songWithId);
+
+    if (result.acknowledged) {
+      return { ...songWithId, _id: result.insertedId }; // Return the inserted song with the generated `_id`
+    } else {
+      // Skip the song without raising an error if insertion fails
+      console.log("Failed to insert song into the database");
+      return null;
+    }
+  }
+
+
+
+          
 }
+   
 
 module.exports = { SongService };

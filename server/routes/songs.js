@@ -71,4 +71,20 @@ router.patch("/:id/like", async (request, response) => {
   response.status(HTTP_STATUS.SUCCESS).json({ liked });
 })
 
+// Add a new song
+router.post("/", async (req, res) => {
+  try {
+    const song = req.body; // Get song data from the request body
+    if (!song || !song.name || !song.src) {
+      return res.status(400).json({ error: "Invalid song data" });
+    }
+
+    const addedSong = await songService.addSong(song); // Use the addSong method
+    res.status(201).json(addedSong); // Respond with the added song
+  } catch (error) {
+    console.error("Error adding song:", error);
+    res.status(500).json({ error: "Failed to add song to the database" });
+  }
+});
+
 module.exports = { router, songService };

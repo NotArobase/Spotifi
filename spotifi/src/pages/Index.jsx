@@ -4,32 +4,31 @@ import PlaylistContext from "../contexts/PlaylistContext";
 import Song from "../components/Song";
 import SearchBar from "../components/SearchBar";
 
-export default function Index() {// Nouvel état pour les chansons locales
+export default function Index() {
+  const api = useContext(PlaylistContext).api;
+  const [playlists, setPlaylists] = useState([]);
+  const [songs, setSongs] = useState([]);
+  const [localSongs, setLocalSongs] = useState([]);
 
-    const api = useContext(PlaylistContext).api;
-    const [playlists, setPlaylists] = useState([]);
-    const [songs, setSongs] = useState([]);
-    const [localSongs, setLocalSongs] = useState([]);
-
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const fetchedPlaylists = await api.fetchAllPlaylists();
-          setPlaylists(Array.isArray(fetchedPlaylists) ? fetchedPlaylists : []);
-        } catch (error) {
-          console.error('Failed to fetch playlists:', error);
-          setPlaylists([]);
-        }
-        try {
-          const fetchedSongs = await api.fetchAllSongs();
-          setSongs(Array.isArray(fetchedSongs) ? fetchedSongs : []);
-        } catch (error) {
-          console.error('Failed to fetch songs:', error);
-          setSongs([]);
-        }
-      };
-      fetchData();
-    }, [api]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const fetchedPlaylists = await api.fetchAllPlaylists();
+        setPlaylists(Array.isArray(fetchedPlaylists) ? fetchedPlaylists : []);
+      } catch (error) {
+        console.error("Failed to fetch playlists:", error);
+        setPlaylists([]);
+      }
+      try {
+        const fetchedSongs = await api.fetchAllSongs();
+        setSongs(Array.isArray(fetchedSongs) ? fetchedSongs : []);
+      } catch (error) {
+        console.error("Failed to fetch songs:", error);
+        setSongs([]);
+      }
+    };
+    fetchData();
+  }, [api]);
 
   const handleSearch = async (event, query, exactMatch) => {
     event.preventDefault();
@@ -38,28 +37,40 @@ export default function Index() {// Nouvel état pour les chansons locales
     setSongs(searchResults.songs);
   };
 
-  // Fonction pour gérer la sélection du dossier local
   const handleLocalFolder = async () => {
-    if ('showDirectoryPicker' in window) {
+    if ("showDirectoryPicker" in window) {
       try {
         const folderHandle = await window.showDirectoryPicker();
         const files = [];
 
         for await (const entry of folderHandle.values()) {
-          if (entry.kind === 'file' && entry.name.endsWith('.mp3')) {
+          if (entry.kind === "file" && entry.name.endsWith(".mp3")) {
             const file = await entry.getFile();
             files.push(file);
+
+            // Extract metadata and send to the server
+            const songMetadata = {
+              name: file.name,
+              src: file.webkitRelativePath ? file.webkitRelativePath : file.name, // Handle relative path
+            };
+
+            try {
+              await api.addNewSong(songMetadata); // Add song to the database
+            } catch (error) {
+              console.error("Failed to add song to database:", error);
+            }
           }
         }
 
-        setLocalSongs(files); // Mettre à jour les chansons locales
+        setLocalSongs(files); // Update local songs in the UI
       } catch (err) {
-        console.error("Erreur lors de l'accès au dossier local : ", err);
+        console.error("Error accessing the local folder:", err);
       }
     } else {
-      alert("Votre navigateur ne supporte pas cette fonctionnalité.");
+      alert("Your browser does not support this feature.");
     }
   };
+
 
   // Fonction pour jouer une chanson
   const playSong = (file) => {
@@ -89,7 +100,7 @@ export default function Index() {// Nouvel état pour les chansons locales
 
         {/* Section "Mes chansons - Local" */}
         <div id="local-songs-section" className="section">
-          <h2>Mes chansons - Local</h2>
+          <h1>Mes chansons - Local</h1>
           <button id="access-local-folder" className="btn" onClick={handleLocalFolder}>
             Accéder au dossier local
           </button>
@@ -98,7 +109,6 @@ export default function Index() {// Nouvel état pour les chansons locales
               localSongs.map((song, index) => (
                 <div key={index} className="song-item">
                   <p>{song.name}</p>
-                  <button onClick={() => playSong(song)}>Jouer</button>
                 </div>
               ))
             ) : (

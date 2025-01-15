@@ -117,6 +117,23 @@ export default class HTTPManager {
     return await this.fetchAllSongs(); // Directly returning the promise
   }
 
+  // Add a new song to the server
+  async addNewSong(songMetadata) {
+    try {
+      return await HTTPInterface.POST(`${this.songsBaseURL}`, songMetadata);
+    } catch (err) {
+      console.error("Error in addNewSong:", {
+        metadata: songMetadata,
+        error: err.message,
+        stack: err.stack,
+      });
+      window.alert("An error occurred while adding the song. Check the console for details.");
+      throw err;
+    }
+  }
+
+
+
   // Get all playlists
   async getAllPlaylists () {
     return await this.fetchAllPlaylists(); // Directly returning the promise

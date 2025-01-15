@@ -194,6 +194,9 @@ li a:hover,
     color: black;
     border: 1px solid var(--main-color);
     border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
+    /* Assure que chaque item prend 100% de la largeur */
 }
 
 .song-item p {
@@ -259,77 +262,25 @@ li a:hover,
 
 #search-input {
     flex: 1;
-    margin-right: 5px;
-    text-indent: 10px;
+    margin-left: 10px;
 }
 
-#image-preview {
-    border: 2px solid var(--main-color);
-}
-
-@media only screen and (max-device-width: 600px),
-only screen and (max-width: 800px) {
-    .playlist-container {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-#specific-search-container {
-    margin-top: 5px;
-    font-size: 14px;
-    align-items: center;
-    justify-content: center;
-}
-
-input#specific-search {
-    width: 14px;
-    height: 14px;
-}
-
-#clear-search-bar {
-    background: white;
-    color: black;
-    transition: 0.2s ease-in;
-}
-
-#clear-search-bar:hover {
-    background: black;
-    color: white;
-    transition: 0.2s ease-out;
-}
-
-#exact-parent {
-    align-items: center;
-}
-
-#exact-search {
-    width: 20px;
-    height: 20px;
-}
-
-/* Mes chansons - Local */
 #local-songs-section {
     margin-top: 20px;
 }
 
 #local-songs-section h1 {
     background-color: var(--highlight);
-    /* couleur verte */
-    padding: 10px;
-    border-radius: 3px;
-    font-size: 24px;
-    /* taille du texte identique à "Mes chansons" */
-    color: black;
-    display: inline-block;
-    /* Ajouté pour que le fond se limite au texte */
+        padding: 10px;
+        border-radius: 3px;
 }
 
 #local-songs-list {
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
-    gap: 20px;
+    width: 100%;
+    /* Assurer que la liste prend toute la largeur */
 }
 
 .song-item {
@@ -341,6 +292,9 @@ input#specific-search {
     color: black;
     border: 1px solid var(--main-color);
     border-radius: 5px;
+    width: 100%;
+    /* S'assurer que chaque item occupe toute la largeur */
+    box-sizing: border-box;
 }
 
 .song-item:hover {
@@ -369,9 +323,24 @@ input#specific-search {
     padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: 15px;
+    margin-top: 5px;
+    margin-bottom: 15px;
 }
 
 #access-local-folder:hover {
     background-color: var(--active-color);
+}
+
+@media (max-width: 768px) {
+    .song-item {
+        width: 100%;
+        /* Assurer que les items prennent toute la largeur sur petits écrans */
+    }
+}
+
+@media (max-width: 480px) {
+    .song-item {
+        width: 100%;
+        /* Même règle pour les écrans plus petits */
+    }
 }
