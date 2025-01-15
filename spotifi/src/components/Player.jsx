@@ -47,7 +47,7 @@ export default function Player() {
   };
 
   // ajouter une action pour activer ou désactiver Le loop
-  const loopToogle = () => {
+  const loopToggle = () => {
     dispatch({ type: ACTIONS.TOGGLE_LOOP });
   };
 
