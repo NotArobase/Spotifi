@@ -3,9 +3,11 @@ import Playlist from "../components/Playlist";
 import PlaylistContext from "../contexts/PlaylistContext";
 import Song from "../components/Song";
 import SearchBar from "../components/SearchBar";
+import { AuthContext } from '../contexts/AuthContext';
 
 export default function Index() {
   const api = useContext(PlaylistContext).api;
+  const { currentUser } = useContext(AuthContext);
   const [playlists, setPlaylists] = useState([]);
   const [songs, setSongs] = useState([]);
   const [localSongs, setLocalSongs] = useState([]);
@@ -43,39 +45,38 @@ export default function Index() {
         const folderHandle = await window.showDirectoryPicker();
         const files = [];
 
+        const folderName = folderHandle.name;
+
         for await (const entry of folderHandle.values()) {
           if (entry.kind === "file" && entry.name.endsWith(".mp3")) {
             const file = await entry.getFile();
             files.push(file);
 
-            // Extract metadata and send to the server
+            const relativePath = `${folderName}/${file.name}`;
+
             const songMetadata = {
               name: file.name,
-              src: file.webkitRelativePath ? file.webkitRelativePath : file.name, // Handle relative path
+              isLocal: true,
+              src: relativePath,
+              owner: currentUser?.username || "unknown", // Use currentUser for owner info
+
             };
 
             try {
-              await api.addNewSong(songMetadata); // Add song to the database
+              await api.addNewSong(songMetadata);
             } catch (error) {
               console.error("Failed to add song to database:", error);
             }
           }
         }
 
-        setLocalSongs(files); // Update local songs in the UI
+        setLocalSongs(files);
       } catch (err) {
         console.error("Error accessing the local folder:", err);
       }
     } else {
       alert("Your browser does not support this feature.");
     }
-  };
-
-
-  // Fonction pour jouer une chanson
-  const playSong = (file) => {
-    const audio = new Audio(URL.createObjectURL(file));
-    audio.play();
   };
 
   return (
@@ -91,11 +92,14 @@ export default function Index() {
           </section>
         </div>
 
+        {/* Section Recommendations */}
         <div id="songs-list">
-          <h1>Mes Chansons</h1>
-          {songs.map((song) => (
-            <Song key={song.id} song={song} />
-          ))}
+          <h1>Recommendations</h1>
+          {songs
+            .filter((song) => !song.isLocal) // Exclure les chansons locales
+            .map((song) => (
+              <Song key={song.id} song={song} />
+            ))}
         </div>
 
         {/* Section "Mes chansons - Local" */}

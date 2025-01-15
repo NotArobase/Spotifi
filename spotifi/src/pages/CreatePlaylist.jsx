@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PlaylistContext from "../contexts/PlaylistContext";
-import { loadForEdit } from "../assets/js/utils";
+//import { loadForEdit } from "../assets/js/utils";
 
 export default function CreatePlaylist() {
   const api = useContext(PlaylistContext).api;
@@ -27,7 +27,7 @@ export default function CreatePlaylist() {
           const songsInPlaylist = playlist.songs.map((song) => getNameFromId(song.id, songs));
           setAddedSongs(songsInPlaylist);
           setData(playlist);
-          loadForEdit(playlist);
+          //loadForEdit(playlist);
         });
       }
     });
@@ -76,6 +76,19 @@ export default function CreatePlaylist() {
   const handleNameChange = (event) => {
     setData({ ...data, name: event.target.value });
   };
+
+    const handleChangeInput = (event, index) => {
+      const newSongChoises = addedSongs;
+      newSongChoises[index] = event.target.value;
+      setAddedSongs(newSongChoises);
+      const allSongs = addedSongs
+        .map((song) => {
+          const id = getIdFromName(song);
+          if (id !== -1) return { id };
+        })
+        .filter((x) => x !== undefined);
+      setData({ ...data, songs: allSongs });
+    };
 
   const handleDescriptionChange = (event) => {
     setData({ ...data, description: event.target.value });

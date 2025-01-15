@@ -22,10 +22,33 @@ export default function reducer(state, action) {
       state.audio.paused ? state.audio.play() : state.audio.pause();
       return state.currentSongIndex;
     }
+
     const song = state.songs[index];
-    state.audio.load();
-    const url = await httpManager.getSongURLFromId(song.src);
-    state.audio.src = url;
+    if (!song) {
+      console.error("Song not found in the list");
+      return state.currentSongIndex;
+    }
+
+    console.log("Song details:", song); // Log the song to check the file structure
+
+    if (song.isLocal) {
+      // Assuming song.src contains the relative path or the file object
+      const file = song.file || song.src; // Get the file object from metadata
+
+      // Check if the file is an instance of File or Blob
+      if (file instanceof File || file instanceof Blob) {
+        console.log("Playing local song:", file);
+        state.audio.src = URL.createObjectURL(file); // Use the file object for local songs
+      } else {
+        console.error("song.file is not a valid File or Blob:", file);
+      }
+    } else {
+      // For remote songs, fetch the URL using your HTTPManager
+      state.audio.load();
+      const url = await httpManager.getSongURLFromId(song.src);
+      state.audio.src = url;
+    }
+
     state.audio.play();
     return index;
   }

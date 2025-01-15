@@ -132,8 +132,6 @@ export default class HTTPManager {
     }
   }
 
-
-
   // Get all playlists
   async getAllPlaylists () {
     return await this.fetchAllPlaylists(); // Directly returning the promise

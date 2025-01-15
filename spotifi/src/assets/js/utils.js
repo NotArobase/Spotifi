@@ -1,6 +1,6 @@
 /* eslint-disable no-magic-numbers */
 
-import { SERVER_URL } from "./consts";
+//import { SERVER_URL } from "./consts";
 export function formatTime (seconds) {
   let minutes = Math.floor(seconds / 60);
   minutes = minutes >= 10 ? minutes : "0" + minutes;
@@ -27,13 +27,5 @@ export function random (min, max) {
 }
 
 export const loadForEdit = async (playlist, imageInputRef) => {
-  const blob = await (await fetch(`${SERVER_URL}/${playlist.thumbnail}`)).blob();
-  const dataTransfer = new DataTransfer();
-  const file = new File([blob], `${playlist.thumbnail}`, {
-    type: blob.type,
-  });
-  dataTransfer.items.add(file);
-  const fileInput = imageInputRef.current;
-  fileInput.files = dataTransfer.files;
-  fileInput.dispatchEvent(new Event("change", { bubbles: true }));
+  //useless now, no more thumbnail
 };
