@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SERVER_URL } from '../assets/js/consts';
+import { SERVER_URL, SONG_SERVER_URL } from '../assets/js/consts';
 
 const VotingPage = () => {
   const [songs, setSongs] = useState([]);
@@ -141,7 +141,7 @@ const VotingPage = () => {
             <div className="playlist-preview relative">
               <img
                 alt={`${song.name} thumbnail`}
-                src={`${SERVER_URL}/${song.thumbnail}`}
+                src={`${SONG_SERVER_URL}/${song.thumbnail}`}
                 className="w-full h-48 object-cover rounded-lg mb-4"
               />
             </div>
