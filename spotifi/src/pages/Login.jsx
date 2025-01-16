@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../contexts/AuthContext';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const navigate = useNavigate();
+  const { checkAuth } = useContext(AuthContext);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -24,10 +27,10 @@ const LoginPage = () => {
       }
 
       localStorage.setItem('authToken', data.token);
+      checkAuth();
 
-      // Redirect to home page or dashboard
-      navigate('/');
-      window.location.reload();
+      setSuccess('Login successful! Redirecting to website...');
+      navigate('/index');
     } catch (err) {
       setError(err.message);
     }
@@ -37,7 +40,8 @@ const LoginPage = () => {
     <div style={styles.container}>
       <h1 style={styles.title}>Login</h1>
       <form onSubmit={handleLogin} style={styles.form}>
-        {error && <p style={styles.error}>{error}</p>}
+      {error && <p style={styles.error}>{error}</p>}
+      {success && <p style={styles.success}>{success}</p>}
         <input
           type="text"
           placeholder="Username"
@@ -96,6 +100,10 @@ const styles = {
   },
   error: {
     color: 'red',
+    marginBottom: '10px',
+  },
+  success: {
+    color: 'green',
     marginBottom: '10px',
   },
 };
