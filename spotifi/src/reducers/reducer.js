@@ -32,15 +32,20 @@ export default function reducer(state, action) {
     console.log("Song details:", song); // Log the song to check the file structure
 
     if (song.isLocal) {
-      // Assuming song.src contains the relative path or the file object
-      const file = song.src; // Get the file object from metadata
+      try {
+        // Request the user to select a folder if it's a local song
+        const folderHandle = await window.showDirectoryPicker();
+        console.log(song.src);
+        const fileHandle = await folderHandle.getFileHandle(song.src); // song.src should be the file name or relative path
 
-      // Check if the file is an instance of File or Blob
-      if (file instanceof File || file instanceof Blob) {
+        // Get the file object from the selected file
+        const file = await fileHandle.getFile();
         console.log("Playing local song:", file);
-        state.audio.src = URL.createObjectURL(file); // Use the file object for local songs
-      } else {
-        console.error("song.file is not a valid File or Blob:", file);
+
+        // Use the file object for local songs
+        state.audio.src = URL.createObjectURL(file);
+      } catch (error) {
+        console.error("Error accessing local file:", error);
       }
     } else {
       // For remote songs, fetch the URL using your HTTPManager
@@ -52,6 +57,7 @@ export default function reducer(state, action) {
     state.audio.play();
     return index;
   }
+
 
   async function loadSongs(id) {
     const url = await httpManager.getSongURLFromId(id);
