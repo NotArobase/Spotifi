@@ -33,7 +33,7 @@ export default function reducer(state, action) {
 
     if (song.isLocal) {
       // Assuming song.src contains the relative path or the file object
-      const file = song.file || song.src; // Get the file object from metadata
+      const file = song.src; // Get the file object from metadata
 
       // Check if the file is an instance of File or Blob
       if (file instanceof File || file instanceof Blob) {
