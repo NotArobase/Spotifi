@@ -68,18 +68,18 @@ const VotingPage = () => {
       }
 
       const result = await response.json();
-      
+
       // Update local state based on the action returned from the server
       if (result.message === 'Vote removed!') {
         setVotedSongs(votedSongs.filter(id => id !== songId));
         // Update the voted status in songs array
-        setSongs(songs.map(song => 
+        setSongs(songs.map(song =>
           song._id === songId ? { ...song, voted: false } : song
         ));
       } else {
         setVotedSongs([...votedSongs, songId]);
         // Update the voted status in songs array
-        setSongs(songs.map(song => 
+        setSongs(songs.map(song =>
           song._id === songId ? { ...song, voted: true } : song
         ));
       }

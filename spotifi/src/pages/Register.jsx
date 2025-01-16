@@ -25,6 +25,7 @@ const RegisterPage = () => {
       }
 
       setSuccess('Registration successful! Redirecting to login...');
+      // eslint-disable-next-line no-magic-numbers
       setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
       setError(err.message);
