@@ -36,7 +36,7 @@ export default function reducer(state, action) {
         // Request the user to select a folder if it's a local song
         const folderHandle = await window.showDirectoryPicker();
         console.log(song.src);
-        const fileHandle = await folderHandle.getFileHandle(song.src); // song.src should be the file name or relative path
+        const fileHandle = await folderHandle.getFileHandle(song.src);
 
         // Get the file object from the selected file
         const file = await fileHandle.getFile();
@@ -57,7 +57,6 @@ export default function reducer(state, action) {
     state.audio.play();
     return index;
   }
-
 
   async function loadSongs(id) {
     const url = await httpManager.getSongURLFromId(id);
