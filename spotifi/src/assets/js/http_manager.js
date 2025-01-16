@@ -99,7 +99,7 @@ export default class HTTPManager {
 
   // Fetches a song file (Blob) from the server using its file name (src)
   async getSongURLFromId(src) {
-    const url = `https://garage.deuxfleurs.fr/audio/${src}`;
+    const url = `https://spotifi.web.deuxfleurs.fr/${src}`;
     console.log('Requesting URL:', url); // For debugging
     const songBlob = await fetch(url);
     const blob = await songBlob.blob();

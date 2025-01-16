@@ -80,7 +80,7 @@ export default function reducer(state, action) {
   switch (action.type) {
     case ACTIONS.LOAD:
       // préchargement de la 1re chanson de la liste
-      loadSongs(action.payload.songs[0].id);
+      loadSongs(action.payload.songs[0].src);
       return {
         ...state,
         songs: [...action.payload.songs],
