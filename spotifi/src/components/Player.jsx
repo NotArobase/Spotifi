@@ -48,7 +48,7 @@ export default function Player() {
 
   // ajouter une action pour activer ou désactiver Le loop
   const loopToggle = () => {
-    dispatch({ type: ACTIONS.TOGGLE_LOOP });
+    dispatch({ type: ACTIONS.LOOP });
   };
 
   const shortcutHandler = (event) => {
