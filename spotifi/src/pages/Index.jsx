@@ -52,12 +52,10 @@ export default function Index() {
             const file = await entry.getFile();
             files.push(file);
 
-            const relativePath = `${folderName}/${file.name}`;
-
             const songMetadata = {
               name: file.name,
               isLocal: true,
-              src: relativePath,
+              src: file.name,
               owner: currentUser?.username || "unknown", // Use currentUser for owner info
 
             };
