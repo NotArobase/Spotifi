@@ -7,65 +7,100 @@ const VotingPage = () => {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const TIMEOUT_DURATION = 3000; // Timeout duration for the messages
+  const TIMEOUT_DURATION = 3000;
 
   useEffect(() => {
-    fetchAvailableSongs();
+    const fetchInitialData = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+          throw new Error('No token found in local storage');
+        }
+
+        const songsResponse = await fetch(`${SERVER_URL}/api/voting/songs`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+        });
+
+        if (!songsResponse.ok) throw new Error('Failed to fetch songs');
+
+        const songsData = await songsResponse.json();
+        setSongs(songsData);
+        // Extract IDs of voted songs from the songs data
+        setVotedSongs(songsData.filter(song => song.voted).map(song => song._id));
+        setLoading(false);
+      } catch (err) {
+        console.error('Fetch error:', err);
+        setError(err.message || 'Failed to load data. Please try again later.');
+        setLoading(false);
+      }
+    };
+
+    fetchInitialData();
   }, []);
 
-  const fetchAvailableSongs = async () => {
+  const toggleVote = async (songId) => {
     try {
-      const token = localStorage.getItem('authToken'); // Update key to match localStorage
-      if (!token) throw new Error('No token found in local storage');
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('No token found in local storage');
+      }
 
-      const response = await fetch(`${SERVER_URL}/api/voting/songs`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) throw new Error('Failed to fetch songs');
-
-      const data = await response.json();
-      console.log(data); // Ensure data is logged correctly
-      setSongs(data);
-      setLoading(false);
-    } catch (err) {
-      console.error('Error during fetch:', err.message);
-      setError('Failed to load songs. Please try again later.');
-      setLoading(false);
-    }
-  };
-
-  const castVote = async (songId) => {
-    try {
       const response = await fetch(`${SERVER_URL}/api/voting/vote`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+          'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ songId }),
+        body: JSON.stringify({ songId })
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error);
+        const errorData = await response.text();
+        try {
+          const jsonError = JSON.parse(errorData);
+          throw new Error(jsonError.error || 'Failed to process vote');
+        } catch (e) {
+          throw new Error(`Failed to process vote: ${errorData}`);
+        }
       }
 
-      // Update voted songs list
-      setVotedSongs([...votedSongs, songId]);
+      const result = await response.json();
+      
+      // Update local state based on the action returned from the server
+      if (result.message === 'Vote removed!') {
+        setVotedSongs(votedSongs.filter(id => id !== songId));
+        // Update the voted status in songs array
+        setSongs(songs.map(song => 
+          song._id === songId ? { ...song, voted: false } : song
+        ));
+      } else {
+        setVotedSongs([...votedSongs, songId]);
+        // Update the voted status in songs array
+        setSongs(songs.map(song => 
+          song._id === songId ? { ...song, voted: true } : song
+        ));
+      }
 
-      // Remove voted song from available songs
-      setSongs(songs.filter((song) => song._id !== songId));
-
-      setMessage('Thank you for voting!');
+      setMessage(result.message);
       setTimeout(() => setMessage(''), TIMEOUT_DURATION);
     } catch (err) {
+      console.error('Vote error:', err);
       setError(err.message);
       setTimeout(() => setError(''), TIMEOUT_DURATION);
     }
   };
+
+  // Check for token before rendering
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      setError('Please log in to vote');
+      setLoading(false);
+    }
+  }, []);
 
   if (loading) {
     return (
@@ -98,17 +133,17 @@ const VotingPage = () => {
         {songs.map((song) => (
           <div
             key={song._id}
-            className="bg-white p-4 rounded-lg shadow-lg hover:shadow-xl cursor-pointer transition-all transform hover:scale-105"
-            onClick={() => castVote(song._id)}
+            onClick={() => toggleVote(song._id)}
+            className={`${
+              song.voted ? 'bg-green-300' : 'bg-white'
+            } p-4 rounded-lg shadow-lg hover:shadow-xl cursor-pointer transition-all transform hover:scale-105`}
           >
             <div className="playlist-preview relative">
-              {/* Update image source handling like Playlist */}
               <img
                 alt={`${song.name} thumbnail`}
-                src={`${SERVER_URL}/${song.thumbnail}`} // Using the same image handling method
+                src={`${SERVER_URL}/${song.thumbnail}`}
                 className="w-full h-48 object-cover rounded-lg mb-4"
               />
-              <i className="fa fa-2x fa-play-circle hidden playlist-play-icon absolute top-0 right-0 m-4"></i>
             </div>
             <div className="text-center">
               <h3 className="text-xl font-semibold text-gray-800">{song.name}</h3>
