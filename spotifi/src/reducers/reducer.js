@@ -17,6 +17,58 @@ export const ACTIONS = {
 const httpManager = new HTTPManager();
 
 export default function reducer(state, action) {
+  // Fonction pour récupérer le fichier local à partir du dossier sélectionné
+  async function loadLocalSong(folder, filename) {
+    // Vérifier si le dossier est déjà chargé
+    if (state.loadedFolderPath === folder) {
+      // Si le dossier est déjà ouvert, rechercher le fichier
+      return findFileInFolder(folder, filename);
+    }
+
+    try {
+      const folderHandle = await window.showDirectoryPicker();
+      const files = [];
+
+      // Mémoriser le chemin du dossier chargé
+      state.loadedFolderPath = folderHandle.name;
+
+      // Parcourir le dossier pour retrouver le fichier
+      for await (const entry of folderHandle.values()) {
+        if (entry.kind === "file" && entry.name === filename) {
+          const file = await entry.getFile();
+          files.push(file);
+          return file;
+        }
+      }
+
+      console.error("Fichier introuvable dans le dossier.");
+      return null;
+    } catch (err) {
+      console.error("Erreur lors de l'accès au dossier:", err);
+      return null;
+    }
+  }
+
+  // Fonction pour rechercher un fichier dans un dossier déjà ouvert
+  async function findFileInFolder(folder, filename) {
+    try {
+      // Rechercher le fichier dans le dossier
+      const folderHandle = await window.showDirectoryPicker();
+      for await (const entry of folderHandle.values()) {
+        if (entry.kind === "file" && entry.name === filename) {
+          const file = await entry.getFile();
+          return file;
+        }
+      }
+
+      console.error("Fichier introuvable dans le dossier.");
+      return null;
+    } catch (err) {
+      console.error("Erreur lors de la recherche du fichier:", err);
+      return null;
+    }
+  }
+
   async function playSong(index) {
     if (index === -1) {
       state.audio.paused ? state.audio.play() : state.audio.pause();
@@ -29,33 +81,40 @@ export default function reducer(state, action) {
       return state.currentSongIndex;
     }
 
-    console.log("Song details:", song); // Log the song to check the file structure
+    console.log("Song details:", song);
 
     if (song.isLocal) {
-      // Assuming song.src contains the relative path or the file object
-      const file = song.src; // Get the file object from metadata
+      // Extraire le dossier et le nom du fichier
+      const [folder, filename] = song.src.split("/");
 
-      // Check if the file is an instance of File or Blob
-      if (file instanceof File || file instanceof Blob) {
+      // Lorsque le fichier est local, demandez à l'utilisateur d'accéder au dossier pour retrouver le fichier
+      const file = await loadLocalSong(folder, filename);
+
+      if (file) {
         console.log("Playing local song:", file);
-        state.audio.src = URL.createObjectURL(file); // Use the file object for local songs
+        state.audio.src = URL.createObjectURL(file);
+        state.audio.play();
       } else {
-        console.error("song.file is not a valid File or Blob:", file);
+        console.error("Fichier local introuvable.");
       }
     } else {
-      // For remote songs, fetch the URL using your HTTPManager
+      // Pour les chansons distantes
       state.audio.load();
       const url = await httpManager.getSongURLFromId(song.src);
       state.audio.src = url;
+      state.audio.play();
     }
 
-    state.audio.play();
     return index;
   }
 
+  // Fonction pour charger les chansons
   async function loadSongs(id) {
     const url = await httpManager.getSongURLFromId(id);
     state.audio.src = url;
+
+    // Mettre à jour les chansons dans l'état
+    return { ...state, songs: state.songs }; // vous pouvez adapter cela selon la structure de votre application
   }
 
   function getNextIndex() {
@@ -122,7 +181,7 @@ export default function reducer(state, action) {
           : state.loopMode === "single"
           ? "playlist"
           : "none";
-        return { ...state, loopMode: nextLoopMode };
+      return { ...state, loopMode: nextLoopMode };
     default:
       return state;
   }
