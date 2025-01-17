@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { SERVER_URL, SONG_SERVER_URL } from '../assets/js/consts';
+// Import global CSS for all pages
+import '../assets/css/styles.css';
+// Tailwind CSS specific to VotingPage
+import '../assets/css/voting-output.css'; // You may not need to import it here anymore
 
 const VotingPage = () => {
   const [songs, setSongs] = useState([]);
@@ -10,36 +14,49 @@ const VotingPage = () => {
   const TIMEOUT_DURATION = 3000;
 
   useEffect(() => {
-    const fetchInitialData = async () => {
+    // Dynamically import Tailwind CSS for the Voting Page
+    const loadTailwind = async () => {
       try {
-        const token = localStorage.getItem('authToken');
-        if (!token) {
-          throw new Error('No token found in local storage');
-        }
-
-        const songsResponse = await fetch(`${SERVER_URL}/api/voting/songs`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-        });
-
-        if (!songsResponse.ok) throw new Error('Failed to fetch songs');
-
-        const songsData = await songsResponse.json();
-        setSongs(songsData);
-        // Extract IDs of voted songs from the songs data
-        setVotedSongs(songsData.filter(song => song.voted).map(song => song._id));
-        setLoading(false);
+        await import('../assets/css/tailwind-voting.css'); // Dynamically import Tailwind CSS for this page
+        console.log('Tailwind CSS for Voting Page loaded');
       } catch (err) {
-        console.error('Fetch error:', err);
-        setError(err.message || 'Failed to load data. Please try again later.');
-        setLoading(false);
+        console.error('Failed to load Tailwind CSS for Voting Page:', err);
       }
     };
 
-    fetchInitialData();
+    loadTailwind(); // Load Tailwind styles
+    fetchInitialData(); // Fetch initial data
   }, []);
+
+  // Fetch initial data
+  const fetchInitialData = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('No token found in local storage');
+      }
+
+      const response = await fetch(`${SERVER_URL}/api/voting/songs`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch songs');
+      }
+
+      const data = await response.json();
+      setSongs(data);
+      setVotedSongs(data.filter((song) => song.voted).map((song) => song._id));
+      setLoading(false);
+    } catch (err) {
+      console.error('Fetch error:', err);
+      setError(err.message || 'Failed to load data. Please try again later.');
+      setLoading(false);
+    }
+  };
 
   const toggleVote = async (songId) => {
     try {
@@ -68,18 +85,18 @@ const VotingPage = () => {
       }
 
       const result = await response.json();
-      
+
       // Update local state based on the action returned from the server
       if (result.message === 'Vote removed!') {
         setVotedSongs(votedSongs.filter(id => id !== songId));
         // Update the voted status in songs array
-        setSongs(songs.map(song => 
+        setSongs(songs.map(song =>
           song._id === songId ? { ...song, voted: false } : song
         ));
       } else {
         setVotedSongs([...votedSongs, songId]);
         // Update the voted status in songs array
-        setSongs(songs.map(song => 
+        setSongs(songs.map(song =>
           song._id === songId ? { ...song, voted: true } : song
         ));
       }
