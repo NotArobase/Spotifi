@@ -143,26 +143,26 @@ const VotingPage = () => {
   const maxVotes = leaderboard.length > 0 ? Math.max(...leaderboard.map(song => song.voteCount)) : 1;
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen flex flex-col">
-      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Song Voting</h1>
-      <p className="text-lg mb-8 text-center text-gray-600">
-        Choose up to 20 songs from the list below. The most popular songs will be selected!
-      </p>
+    <div className="p-6 bg-gray-100 min-h-screen flex flex-row">
+      {/* Vote Section (Left Side) */}
+      <div className="flex-1 overflow-y-auto mr-6">
+        <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Song Voting</h1>
+        <p className="text-lg mb-8 text-center text-gray-600">
+          Choose up to 20 songs from the list below. The most popular songs will be selected!
+        </p>
 
-      {message && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-6 py-3 rounded-md mb-6 text-center">
-          {message}
-        </div>
-      )}
+        {message && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-6 py-3 rounded-md mb-6 text-center">
+            {message}
+          </div>
+        )}
 
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-6 py-3 rounded-md mb-6 text-center">
-          {error}
-        </div>
-      )}
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-6 py-3 rounded-md mb-6 text-center">
+            {error}
+          </div>
+        )}
 
-      <div className="flex-1 overflow-y-auto mb-6">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Voting Songs</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {songs.map((song) => (
             <div
@@ -193,29 +193,21 @@ const VotingPage = () => {
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      {/* Leaderboard Section (Right Side) */}
+      <div className="w-2/5 overflow-y-auto">
         <h2 className="text-2xl font-semibold text-gray-800 mb-4">Leaderboard</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div>
           {leaderboard.map((song) => (
-            <div
-              key={song._id}
-              className="bg-yellow-100 p-4 rounded-lg shadow-lg transition-all transform hover:scale-105"
-            >
-              <div className="text-center">
-                <h3 className="text-xl font-semibold text-gray-800">{song.name}</h3>
-                <p className="text-gray-600">{song.artist}</p>
-                <div className="text-center mt-2">
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold">Votes:</span>
-                    <span>{song.voteCount}</span>
-                  </div>
-                  <div className="bg-gray-300 h-4 mt-2 rounded-full">
-                    <div
-                      className="h-4 rounded-full bg-green-500"
-                      style={{ width: `${(song.voteCount / maxVotes) * 100}%` }}
-                    ></div>
-                  </div>
-                </div>
+            <div key={song._id} className="mb-4">
+              <div className="flex justify-between items-center">
+                <span className="font-semibold text-gray-800">{song.artist} - {song.name}</span>
+                <span className="text-gray-600">{song.voteCount}</span>
+              </div>
+              <div className="bg-gray-300 h-4 rounded-full mt-2">
+                <div
+                  className="h-4 rounded-full bg-green-500"
+                  style={{ width: `${(song.voteCount / maxVotes) * 100}%` }}
+                ></div>
               </div>
             </div>
           ))}
