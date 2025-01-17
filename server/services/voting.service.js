@@ -67,41 +67,29 @@ class VotingService {
     return votedSongs;
   }
 
-  // Get the final selection of songs based on the votes
-  async getFinalSelection() {
+  // Renamed method: Get leaderboard with song vote counts
+  async getLeaderboard() {
+    // Aggregate vote counts for each song
     const voteResults = await this.votesCollection.aggregate([
-      { $group: { _id: "$songId", count: { $sum: 1 } } },
-      { $sort: { count: -1 } }
+      { $group: { _id: "$songId", count: { $sum: 1 } } },  // Group by songId and count votes
+      { $sort: { count: -1 } }  // Sort by vote count in descending order
     ]).toArray();
-
-    const selectedSongs = [];
-    const remainingSongs = [];
-
-    const allSongs = await this.songsCollection.find({}).toArray();
+  
+    // Fetch only the necessary fields (name, artist, id)
+    const allSongs = await this.songsCollection.find({}, { projection: { name: 1, artist: 1, _id: 1 } }).toArray();
     
-    for (const song of allSongs) {
+    // Map songs to leaderboard with vote counts
+    const leaderboard = allSongs.map(song => {
       const voteResult = voteResults.find(vr => vr._id === song._id.toString());
-      if (voteResult) {
-        selectedSongs.push({ ...song, voteCount: voteResult.count });
-      } else {
-        remainingSongs.push(song);
-      }
-    }
-
-    selectedSongs.sort((a, b) => b.voteCount - a.voteCount);
-
-    while (selectedSongs.length < 20 && remainingSongs.length > 0) {
-      const randomIndex = Math.floor(Math.random() * remainingSongs.length);
-      const randomSong = remainingSongs.splice(randomIndex, 1)[0];
-      selectedSongs.push({ ...randomSong, voteCount: 0 });
-    }
-
-    return selectedSongs;
-  }
-
-  async resetVotes() {
-    await this.votesCollection.deleteMany({});
-    return true;
+      return voteResult
+        ? { ...song, voteCount: voteResult.count }
+        : { ...song, voteCount: 0 };  // If no vote, set count to 0
+    });
+  
+    // Sort leaderboard by vote count
+    leaderboard.sort((a, b) => b.voteCount - a.voteCount);
+  
+    return leaderboard;
   }
 }
 

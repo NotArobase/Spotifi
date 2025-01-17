@@ -47,13 +47,15 @@ router.post("/vote", authenticateToken, async (req, res) => {
   }
 });
 
-router.get("/results", authenticateToken, async (req, res) => {
+// Renamed route: leaderboard will now show the final selection with votes
+router.get("/leaderboard", authenticateToken, async (req, res) => {
   try {
-    const results = await votingService.getFinalSelection();
-    res.status(HTTP_STATUS.SUCCESS).json(results);
+    const leaderboard = await votingService.getLeaderboard();
+    res.status(HTTP_STATUS.SUCCESS).json(leaderboard);
   } catch (error) {
     res.status(HTTP_STATUS.SERVER_ERROR).json({ error: error.message });
   }
 });
+
 
 module.exports = { router };

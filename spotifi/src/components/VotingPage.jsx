@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { SERVER_URL, SONG_SERVER_URL } from '../assets/js/consts';
-// Import global CSS for all pages
 import '../assets/css/styles.css';
-// Tailwind CSS specific to VotingPage
-import '../assets/css/voting-output.css'; // You may not need to import it here anymore
+import '../assets/css/voting-output.css';
 
 const VotingPage = () => {
   const [songs, setSongs] = useState([]);
@@ -11,31 +10,35 @@ const VotingPage = () => {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const TIMEOUT_DURATION = 3000;
+  const [leaderboard, setLeaderboard] = useState([]);
+  const navigate = useNavigate(); // For navigation
 
   useEffect(() => {
-    // Dynamically import Tailwind CSS for the Voting Page
-    const loadTailwind = async () => {
-      try {
-        await import('../assets/css/tailwind-voting.css'); // Dynamically import Tailwind CSS for this page
-        console.log('Tailwind CSS for Voting Page loaded');
-      } catch (err) {
-        console.error('Failed to load Tailwind CSS for Voting Page:', err);
-      }
-    };
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      setError('Please log in to vote');
+      setLoading(false);
+      navigate('/login');
+      return;
+    }
 
-    loadTailwind(); // Load Tailwind styles
-    fetchInitialData(); // Fetch initial data
+    loadTailwind();
+    fetchInitialData();
+    fetchLeaderboard();
   }, []);
 
-  // Fetch initial data
+  const loadTailwind = async () => {
+    try {
+      await import('../assets/css/tailwind-voting.css');
+      console.log('Tailwind CSS for Voting Page loaded');
+    } catch (err) {
+      console.error('Failed to load Tailwind CSS:', err);
+    }
+  };
+
   const fetchInitialData = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      if (!token) {
-        throw new Error('No token found in local storage');
-      }
-
       const response = await fetch(`${SERVER_URL}/api/voting/songs`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -58,20 +61,42 @@ const VotingPage = () => {
     }
   };
 
-  const toggleVote = async (songId) => {
+  const fetchLeaderboard = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      if (!token) {
-        throw new Error('No token found in local storage');
+      const response = await fetch(`${SERVER_URL}/api/voting/leaderboard`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to fetch leaderboard');
       }
+  
+      const data = await response.json();
+      setLeaderboard(data);
+    } catch (err) {
+      console.error('Leaderboard fetch error:', err);
+    }
+  };
+
+  const toggleVote = async (songId) => {
+    if (votedSongs.length >= 20 && !votedSongs.includes(songId)) {
+      setError('You can only vote for up to 20 songs.');
+      setTimeout(() => setError(''), 3000);
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) throw new Error('No token found');
 
       const response = await fetch(`${SERVER_URL}/api/voting/vote`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ songId })
+        body: JSON.stringify({ songId }),
       });
 
       if (!response.ok) {
@@ -85,39 +110,26 @@ const VotingPage = () => {
       }
 
       const result = await response.json();
-
-      // Update local state based on the action returned from the server
       if (result.message === 'Vote removed!') {
         setVotedSongs(votedSongs.filter(id => id !== songId));
-        // Update the voted status in songs array
         setSongs(songs.map(song =>
           song._id === songId ? { ...song, voted: false } : song
         ));
       } else {
         setVotedSongs([...votedSongs, songId]);
-        // Update the voted status in songs array
         setSongs(songs.map(song =>
           song._id === songId ? { ...song, voted: true } : song
         ));
       }
 
       setMessage(result.message);
-      setTimeout(() => setMessage(''), TIMEOUT_DURATION);
+      setTimeout(() => setMessage(''), 3000);
     } catch (err) {
       console.error('Vote error:', err);
       setError(err.message);
-      setTimeout(() => setError(''), TIMEOUT_DURATION);
+      setTimeout(() => setError(''), 3000);
     }
   };
-
-  // Check for token before rendering
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-      setError('Please log in to vote');
-      setLoading(false);
-    }
-  }, []);
 
   if (loading) {
     return (
@@ -126,6 +138,9 @@ const VotingPage = () => {
       </div>
     );
   }
+
+  // Find the maximum vote count to normalize the bar width
+  const maxVotes = leaderboard.length > 0 ? Math.max(...leaderboard.map(song => song.voteCount)) : 1;
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen flex flex-col">
@@ -146,7 +161,8 @@ const VotingPage = () => {
         </div>
       )}
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto mb-6">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Voting Songs</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {songs.map((song) => (
             <div
@@ -174,6 +190,39 @@ const VotingPage = () => {
 
         {songs.length === 0 && (
           <div className="text-center text-gray-600 mt-8">No more songs available for voting.</div>
+        )}
+      </div>
+
+      <div className="flex-1 overflow-y-auto">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Leaderboard</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {leaderboard.map((song) => (
+            <div
+              key={song._id}
+              className="bg-yellow-100 p-4 rounded-lg shadow-lg transition-all transform hover:scale-105"
+            >
+              <div className="text-center">
+                <h3 className="text-xl font-semibold text-gray-800">{song.name}</h3>
+                <p className="text-gray-600">{song.artist}</p>
+                <div className="text-center mt-2">
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold">Votes:</span>
+                    <span>{song.voteCount}</span>
+                  </div>
+                  <div className="bg-gray-300 h-4 mt-2 rounded-full">
+                    <div
+                      className="h-4 rounded-full bg-green-500"
+                      style={{ width: `${(song.voteCount / maxVotes) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {leaderboard.length === 0 && (
+          <div className="text-center text-gray-600 mt-8">No songs available for leaderboard.</div>
         )}
       </div>
     </div>
