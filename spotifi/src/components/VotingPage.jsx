@@ -128,7 +128,7 @@ const VotingPage = () => {
   }
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="p-6 bg-gray-100 min-h-screen flex flex-col">
       <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Song Voting</h1>
       <p className="text-lg mb-8 text-center text-gray-600">
         Choose up to 20 songs from the list below. The most popular songs will be selected!
@@ -146,34 +146,36 @@ const VotingPage = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {songs.map((song) => (
-          <div
-            key={song._id}
-            onClick={() => toggleVote(song._id)}
-            className={`${
-              song.voted ? 'bg-green-300' : 'bg-white'
-            } p-4 rounded-lg shadow-lg hover:shadow-xl cursor-pointer transition-all transform hover:scale-105`}
-          >
-            <div className="playlist-preview relative">
-              <img
-                alt={`${song.name} thumbnail`}
-                src={`${SONG_SERVER_URL}/${song.thumbnail}`}
-                className="w-full h-48 object-cover rounded-lg mb-4"
-              />
+      <div className="flex-1 overflow-y-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {songs.map((song) => (
+            <div
+              key={song._id}
+              onClick={() => toggleVote(song._id)}
+              className={`${
+                song.voted ? 'bg-green-300' : 'bg-white'
+              } p-4 rounded-lg shadow-lg hover:shadow-xl cursor-pointer transition-all transform hover:scale-105`}
+            >
+              <div className="playlist-preview relative">
+                <img
+                  alt={`${song.name} thumbnail`}
+                  src={`${SONG_SERVER_URL}/${song.thumbnail}`}
+                  className="w-full h-48 object-cover rounded-lg mb-4"
+                />
+              </div>
+              <div className="text-center">
+                <h3 className="text-xl font-semibold text-gray-800">{song.name}</h3>
+                <p className="text-gray-600">{song.artist}</p>
+                <p className="text-gray-500 text-sm">{song.genre}</p>
+              </div>
             </div>
-            <div className="text-center">
-              <h3 className="text-xl font-semibold text-gray-800">{song.name}</h3>
-              <p className="text-gray-600">{song.artist}</p>
-              <p className="text-gray-500 text-sm">{song.genre}</p>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      {songs.length === 0 && (
-        <div className="text-center text-gray-600 mt-8">No more songs available for voting.</div>
-      )}
+        {songs.length === 0 && (
+          <div className="text-center text-gray-600 mt-8">No more songs available for voting.</div>
+        )}
+      </div>
     </div>
   );
 };
