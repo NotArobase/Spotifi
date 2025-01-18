@@ -49,13 +49,34 @@ class PlaylistService {
    * Modifie une playlist en fonction de son id et met à jour le fichier de toutes les playlists
    * @param {Object} playlist nouveau contenu de la playlist
    */
+  /**
+ * Modifie une playlist en fonction de son id et met à jour le fichier de toutes les playlists
+ * @param {Object} playlist Nouveau contenu de la playlist
+ * @returns {Object} Résultat de l'opération
+ */
   async updatePlaylist(playlist) {
-    const filter = { _id: playlist._id };
+    const { ObjectId } = require('mongodb');
+    
+    if (!playlist._id) {
+      throw new Error('Playlist _id is required.');
+    }
+
+    const filter = { _id: new ObjectId(playlist._id) }; // Convert string to ObjectId
     delete playlist._id; // _id est immutable
     const updateQuery = { $set: playlist };
-    const result = await this.collection.updateOne(filter, updateQuery);
-    return result;
+
+    try {
+      const result = await this.collection.updateOne(filter, updateQuery);
+      if (result.matchedCount === 0) {
+        console.warn('No playlist found with the specified _id.');
+      }
+      return result;
+    } catch (error) {
+      console.error('Error updating playlist:', error);
+      throw error;
+    }
   }
+
 
   /**
    * @param {string} id identifiant de la playlist
