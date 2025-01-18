@@ -45,8 +45,6 @@ export default function Index() {
         const folderHandle = await window.showDirectoryPicker();
         const files = [];
 
-        const folderName = folderHandle.name;
-
         for await (const entry of folderHandle.values()) {
           if (entry.kind === "file" && entry.name.endsWith(".mp3")) {
             const file = await entry.getFile();
