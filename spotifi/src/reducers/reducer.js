@@ -11,7 +11,7 @@ export const ACTIONS = {
   SCRUB: "scrub",
   SHUFFLE: "shuffle",
   MUTE: "mute",
-  LOOP: "TOGGLE_LOOP",
+  LOOP: "loop",
 };
 
 const httpManager = new HTTPManager();
@@ -77,9 +77,9 @@ export default function reducer(state, action) {
   }
 
   function muteToggle() {
-    const isMuted = state.audio.volume === 0;
-    state.audio.volume = isMuted ? 1 : 0;
-    return !isMuted;
+    const isLoop = state.loop === "loop";
+    state.loop = isLoop ? 1 : 0;
+    return !isLoop;
   }
 
   switch (action.type) {
@@ -120,14 +120,11 @@ export default function reducer(state, action) {
       return { ...state, mute: muteToggle() };
     case ACTIONS.SHUFFLE:
       return { ...state, shuffle: !state.shuffle };
-    case ACTIONS.TOGGLE_LOOP:
-      const nextLoopMode =
-        state.loopMode === "none"
-          ? "single"
-          : state.loopMode === "single"
-          ? "playlist"
-          : "none";
-        return { ...state, loopMode: nextLoopMode };
+    case ACTIONS.LOOP:
+      return {
+        ...state,
+        loopMode: action.payload, // Modes : "none", "single", "playlist"
+      };
     default:
       return state;
   }

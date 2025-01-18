@@ -126,6 +126,22 @@ li a:hover,
     color: var(--player-color);
 }
 
+.control-btn-loop {
+    color: gray;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+
+.control-btn.loop-single {
+    color: #1db954;
+  }  
+
+.control-btn.loop-playlist {
+    color: #1db954; 
+    transform: rotate(360deg); 
+    transition: transform 0.3s ease;
+  }
+
 .control-btn-toggled {
     color: var(--active-color);
 }

@@ -1,15 +1,22 @@
 const { FileSystemManager } = require("./file_system_manager");
 const { dbService } = require("./database.service");
 const DB_CONSTS = require("../utils/env");
-
 const path = require("path");
 
 class UserService {
 
   constructor () {
-    this.JSON_PATH = path.join(__dirname + "../../data/users.json");
+    this.JSON_PATH = path.join(__dirname + "../data/users.json");
     this.fileSystemManager = new FileSystemManager();
     this.dbService = dbService;
+
+    this.dbService.connectToServer(DB_CONSTS.DB_URI)
+    .then(() => {
+      console.log('Database connected in UserService');
+    })
+    .catch((error) => {
+      console.error('Error connecting to database in UserService:', error); 
+    });
   }
 
   get collection () {
@@ -22,20 +29,16 @@ class UserService {
    * @returns {Promise<Object>} - The created user
    */
   async createUser(userData) {
-    try {
-      const { username, password } = userData;
+    try { const { username, password } = userData;
       if (!username || !password) {
-        throw new Error('username ou password manquant');
+      throw new Error('username ou password manquant');
       }
-      const result = await this.collection.insertOne({ username, password });
-
+      result = await this.collection.insertOne({ username, password });
       const createdUser = await this.collection.findOne({ _id: result.insertedId });
-
-      return createdUser; // Return le user créé
+      return createdUser;
     } catch (error) {
-      throw new Error('Error creating user: ' + error.message);
+      throw new Error('Error creating user: ' + error.message); }
     }
-  }
 
   /**
    * Delete un user à partir du username

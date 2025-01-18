@@ -54,4 +54,31 @@ router.delete("/:username", async (request, response) => {
   }
 });
 
+/** 
+ * Retourne le nombre de playlists pour un utilisateur donné
+ * @memberof module:routes/users
+ * @name GET /users/:id/playlists-count
+ */ 
+router.get("/:id/playlists-count", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const playlistsCount = await getPlaylistsCountForUser(userId);
+    if (playlistsCount) {
+      res.status(HTTP_STATUS.SUCCESS).json({ userId, playlistsCount });
+    } else {
+      res.status(HTTP_STATUS.NOT_FOUND).send("User or playlists not found");
+    }
+  } catch (error) {
+    res.status(HTTP_STATUS.SERVER_ERROR).json({ error: "Erreur lors de la récupération des données" });
+  }
+});
+async function getPlaylistsCountForUser(userId) {
+  try {
+    const playlistsCount = await dbService.query( "SELECT COUNT(*) as count FROM playlists WHERE user_id = ?", [userId] );
+    return playlistsCount[0].count;
+  } catch (error) {
+    console.error("Error fetching playlists count for user:", error);
+    throw error;
+  }
+}
 module.exports = { router, userService };
