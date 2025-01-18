@@ -38,8 +38,6 @@ class SongService {
       console.log(`No song found for query:`, query);
       return null;
     }
-
-    console.log('Song retrieved:', song);
     return song;
   }
 
