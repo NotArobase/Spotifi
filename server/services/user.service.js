@@ -2,6 +2,7 @@ const { FileSystemManager } = require("./file_system_manager");
 const { dbService } = require("./database.service");
 const DB_CONSTS = require("../utils/env");
 const path = require("path");
+const { randomUUID } = require("crypto");
 
 class UserService {
 
@@ -142,9 +143,10 @@ class UserService {
    * @param {object} playlist -  The playlist to add
    * @returns  The updated user or null if not found
    */
-  async addPlaylistForUser(userId, playlistData) {
+  async addPlaylistForUser(userId, playlist) {
+    playlist.id = randomUUID();
     try {
-      const playlistsCollection = this.dbService.db.collection("playlists");
+      const playlistsCollection = this.dbService.db.collection(DB_CONSTS.DB_COLLECTION_PLAYLISTS);
   
       // Vérifie si l'utilisateur a déjà 10 playlists
       const playlistCount = await playlistsCollection.countDocuments({ user_id: userId });
@@ -158,7 +160,7 @@ class UserService {
         ...playlist,
       });
   
-      return result.insertedId;
+      return playlist;
     } catch (error) {
       console.error("Error adding playlist for user:", error.message);
       throw error;

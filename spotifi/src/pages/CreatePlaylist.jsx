@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PlaylistContext from "../contexts/PlaylistContext";
+import { AuthContext } from "../contexts/AuthContext";
 //import { loadForEdit } from "../assets/js/utils";
 
 export default function CreatePlaylist() {
   const api = useContext(PlaylistContext).api;
+  const { currentUser } = useContext(AuthContext); // Accédez à l'utilisateur actuel depuis le contexte AuthContext
   const params = useParams();
   const navigate = useNavigate();
   const [songs, setSongs] = useState([]);
@@ -35,14 +37,28 @@ export default function CreatePlaylist() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!data.name || !data.description) return;
-    if (params.id) {
-      api.updatePlaylist(data);
-    } else {
-      api.addNewPlaylist(data);
+    if (!data.name || !data.description) {
+      alert("Veuillez remplir tous les champs.");
+      return;
     }
-    navigate("/index");
-  };
+    try {
+      const userId = currentUser?.id; // Utilise l'ID utilisateur depuis AuthContext
+      if (!userId) {
+        alert("Utilisateur non connecté.");
+        return;
+      }
+        if (params.id) {
+          await api.updatePlaylist(data); // Mise à jour d'une playlist existante
+          alert("Playlist mise à jour avec succès !");
+        } else {
+          await api.addNewPlaylistForUser(userId, data); // Ajout d'une nouvelle playlist
+          alert("Playlist créée avec succès !");
+        }
+        navigate("/index");
+      } catch (error) {
+        alert("Une erreur est survenue lors de la soumission de la playlist.");
+      }
+    };
 
   const addItemSelect = (event) => {
     event.preventDefault();
