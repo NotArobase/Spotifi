@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PlaylistContext from "../contexts/PlaylistContext";
+import { AuthContext } from '../contexts/AuthContext';
 //import { loadForEdit } from "../assets/js/utils";
 
 export default function CreatePlaylist() {
   const api = useContext(PlaylistContext).api;
+  const { currentUser } = useContext(AuthContext);
   const params = useParams();
   const navigate = useNavigate();
   const [songs, setSongs] = useState([]);
@@ -20,14 +22,21 @@ export default function CreatePlaylist() {
   }, []);
 
   const loadData = async () => {
+    console.log(currentUser);
     api.getAllSongs().then((songs) => {
-      setSongs(songs);
+      // Filter songs for "all" or owned by the current user
+      const filteredSongs = songs.filter(
+        (song) => song.owner === "all" || song.owner === currentUser.username
+      );
+      setSongs(filteredSongs);
+
       if (params.id) {
         api.getPlaylistById(params.id).then((playlist) => {
-          const songsInPlaylist = playlist.songs.map((song) => getNameFromId(song.id, songs));
+          const songsInPlaylist = playlist.songs.map((song) =>
+            getNameFromId(song.id, filteredSongs)
+          );
           setAddedSongs(songsInPlaylist);
           setData(playlist);
-          //loadForEdit(playlist);
         });
       }
     });
