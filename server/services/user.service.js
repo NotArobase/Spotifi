@@ -69,6 +69,30 @@ class UserService {
   }
 
   /**
+   * get the playlist count of a user
+   * @param {string} userID - The user Id of the user to get the playlist count
+   * @returns {Promise<Object|null>} - playlist count
+   */
+  async getPlaylistsCountForUser(userId) {
+      try {
+        // Vérifie que l'utilisateur existe d'abord (optionnel mais recommandé)
+        const userExists = await this.collection.findOne({ _id: userId });
+        if (!userExists) {
+          throw new Error("User not found");
+        }
+    
+        // Compte les playlists pour l'utilisateur donné
+        const playlistsCollection = this.dbService.db.collection("playlists"); // Assurez-vous que "playlists" est le bon nom de la collection
+        const playlistsCount = await playlistsCollection.countDocuments({ user_id: userId });
+    
+        return playlistsCount;
+      } catch (error) {
+        console.error("Error fetching playlists count for user:", error.message);
+        throw new Error("Failed to fetch playlists count");
+      }
+    }
+
+  /**
    * Get user by username
    * @param {string} username - The username of the user to retrieve
    * @returns {Promise<Object|null>} - The user data or null if not found
@@ -111,6 +135,37 @@ class UserService {
       throw new Error('Error updating user password: ' + error.message);
     }
   }
+
+  /**
+   * Add a playlist for a specific user
+   * @param {string} userID - The Id of the user to add playlist
+   * @param {object} playlist -  The playlist to add
+   * @returns  The updated user or null if not found
+   */
+  async addPlaylistForUser(userId, playlistData) {
+    try {
+      const playlistsCollection = this.dbService.db.collection("playlists");
+  
+      // Vérifie si l'utilisateur a déjà 10 playlists
+      const playlistCount = await playlistsCollection.countDocuments({ user_id: userId });
+      if (playlistCount >= 10) {
+        throw new Error("Playlist limit reached. A user can only have up to 10 playlists.");
+      }
+  
+      // Ajoute la nouvelle playlist
+      const result = await playlistsCollection.insertOne({
+        user_id: userId,
+        ...playlist,
+      });
+  
+      return result.insertedId;
+    } catch (error) {
+      console.error("Error adding playlist for user:", error.message);
+      throw error;
+    }
+  }
+  
+
 }
 
 module.exports = {UserService};

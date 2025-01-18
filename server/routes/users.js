@@ -62,23 +62,36 @@ router.delete("/:username", async (request, response) => {
 router.get("/:id/playlists-count", async (req, res) => {
   try {
     const userId = req.params.id;
-    const playlistsCount = await getPlaylistsCountForUser(userId);
-    if (playlistsCount) {
-      res.status(HTTP_STATUS.SUCCESS).json({ userId, playlistsCount });
-    } else {
-      res.status(HTTP_STATUS.NOT_FOUND).send("User or playlists not found");
+
+    // Valider que l'ID est au bon format MongoDB ObjectID
+    if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: "Invalid user ID format" });
     }
-  } catch (error) {
-    res.status(HTTP_STATUS.SERVER_ERROR).json({ error: "Erreur lors de la récupération des données" });
+
+    const playlistsCount = await userService.getPlaylistsCountForUser(userId);
+    res.status(HTTP_STATUS.SUCCESS).json({ userId, playlistsCount });
+    } catch (error) {
+    res
+      .status(HTTP_STATUS.SERVER_ERROR)
+      .json({ error: "Erreur lors de la récupération des playlists" });
   }
 });
-async function getPlaylistsCountForUser(userId) {
+
+router.post("/:id/playlists", async (req, res) => {
   try {
-    const playlistsCount = await dbService.query( "SELECT COUNT(*) as count FROM playlists WHERE user_id = ?", [userId] );
-    return playlistsCount[0].count;
+    const userId = req.params.id;
+    const playlistData = req.body;
+
+    // Valider que l'ID est au bon format MongoDB ObjectID
+    if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: "Invalid user ID format" });
+    }
+
+    const playlistId = await userService.addPlaylistForUser(userId, playlistData);
+    res.status(HTTP_STATUS.SUCCESS).json({ message: "Playlist added successfully", playlistId });
   } catch (error) {
-    console.error("Error fetching playlists count for user:", error);
-    throw error;
+    res.status(HTTP_STATUS.SERVER_ERROR).json({ error: error.message });
   }
-}
+});
+
 module.exports = { router, userService };
