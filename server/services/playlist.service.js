@@ -54,6 +54,11 @@ class PlaylistService {
  * @param {Object} playlist Nouveau contenu de la playlist
  * @returns {Object} Résultat de l'opération
  */
+  /**
+ * Modifie une playlist en fonction de son id et met à jour le fichier de toutes les playlists
+ * @param {Object} playlist Nouveau contenu de la playlist
+ * @returns {Object} Résultat de l'opération
+ */
   async updatePlaylist(playlist) {
     const { ObjectId } = require('mongodb');
     
@@ -61,7 +66,18 @@ class PlaylistService {
       throw new Error('Playlist _id is required.');
     }
 
-    const filter = { _id: new ObjectId(playlist._id) }; // Convert string to ObjectId
+    let objectId;
+    try {
+      objectId = ObjectId.isValid(playlist._id) ? new ObjectId(playlist._id) : null;
+    } catch {
+      throw new Error('Invalid _id format.');
+    }
+
+    if (!objectId) {
+      throw new Error('Invalid ObjectId provided.');
+    }
+
+    const filter = { _id: objectId }; // Use valid ObjectId
     delete playlist._id; // _id est immutable
     const updateQuery = { $set: playlist };
 
@@ -76,6 +92,7 @@ class PlaylistService {
       throw error;
     }
   }
+
 
 
   /**
