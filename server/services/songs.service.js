@@ -28,11 +28,21 @@ class SongService {
    * @param {number} id identifiant de la chanson
    * @returns chanson correspondant à l'id
    */
-  async getSongById (id) {
-    const query = { id: id };
-    let song = await this.collection.findOne(query);
+  async getSongById(id) {
+    const query = { id: Number(id) }; // Ensure the query is a number
+    console.log(`Querying song with query:`, query);
+
+    const song = await this.collection.findOne(query);
+
+    if (!song) {
+      console.log(`No song found for query:`, query);
+      return null;
+    }
+
+    console.log('Song retrieved:', song);
     return song;
   }
+
 
   /**
    * Modifie l'état aimé d'une chanson par l'état inverse
@@ -41,6 +51,7 @@ class SongService {
    */
   async updateSongLike (id) {
     let song = await this.getSongById(id);
+    console.log('Retrieved song:', song);
     const newLiked = !(song.liked);
     const updateQuery = { $set: { liked: newLiked } };
     const filter = { _id: song._id };

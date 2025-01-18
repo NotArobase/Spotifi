@@ -53,6 +53,9 @@ export default function Index() {
             const songMetadata = {
               name: file.name,
               isLocal: true,
+              liked: false,
+              genre: "unknown",
+              artist: "unknown",
               src: file.name,
               owner: currentUser?.username || "unknown", // Use currentUser for owner info
 
