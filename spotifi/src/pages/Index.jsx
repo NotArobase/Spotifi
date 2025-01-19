@@ -10,6 +10,7 @@ export default function Index() {
   const { currentUser } = useContext(AuthContext);
   const [playlists, setPlaylists] = useState([]);
   const [songs, setSongs] = useState([]);
+  const { dispatch } = useContext(PlaylistContext); // Destructure dispatch here
   //const [localSongs, setLocalSongs] = useState([]);
 
   useEffect(() => {
