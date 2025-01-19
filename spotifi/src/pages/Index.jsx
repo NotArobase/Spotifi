@@ -10,7 +10,7 @@ export default function Index() {
   const { currentUser } = useContext(AuthContext);
   const [playlists, setPlaylists] = useState([]);
   const [songs, setSongs] = useState([]);
-  const [localSongs, setLocalSongs] = useState([]);
+  //const [localSongs, setLocalSongs] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -96,8 +96,8 @@ export default function Index() {
           <h1>Recommendations</h1>
           {songs
             .filter((song) => !song.isLocal) // Exclure les chansons locales
-            .map((song) => (
-              <Song key={song.id} song={song} />
+            .map((song, idx) => (
+              <Song key={song.id} song={song} index={idx + 1} />
             ))}
         </div>
 
@@ -108,12 +108,12 @@ export default function Index() {
             Accéder au dossier local
           </button>
           <div id="local-songs-list">
-            {localSongs.length > 0 ? (
-              localSongs.map((song, index) => (
-                <div key={index} className="song-item">
-                  <p>{song.name}</p>
-                </div>
-              ))
+            {songs.filter(song => song.isLocal && song.owner === currentUser.username).length > 0 ? (
+              songs
+                .filter(song => song.isLocal && song.owner === currentUser.username)
+                .map((song, idx) => (
+                  <Song key={song.id} song={song} index={idx + 1} />
+                ))
             ) : (
               <p>Aucune chanson locale disponible</p>
             )}
