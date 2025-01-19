@@ -123,7 +123,7 @@ export default function Index() {
                     key={song.id}
                     song={song}
                     index={idx + 1 + songs.filter(song => !song.isLocal).length} // Adjust index for local songs
-                    onClick={() => playSong(idx + 1 + songs.filter(song => !song.isLocal).length)} // Pass adjusted index
+                    onClick={() => playSong(idx + 1 + songs.filter(song => !song.isLocal).length)}
                   />
                 ))
             ) : (
