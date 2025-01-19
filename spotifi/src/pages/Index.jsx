@@ -24,6 +24,8 @@ export default function Index() {
       try {
         const fetchedSongs = await api.fetchAllSongs();
         setSongs(Array.isArray(fetchedSongs) ? fetchedSongs : []);
+        dispatch({ type: ACTIONS.LOAD, payload: { songs: fetchedSongs } }); // Update the reducer
+
       } catch (error) {
         console.error("Failed to fetch songs:", error);
         setSongs([]);
