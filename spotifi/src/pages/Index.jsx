@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import Playlist from "../components/Playlist";
-import { ACTIONS } from "../reducers/reducer";
+//import { ACTIONS } from "../reducers/reducer";
 import PlaylistContext from "../contexts/PlaylistContext";
 import Song from "../components/Song";
 import SearchBar from "../components/SearchBar";
@@ -11,7 +11,7 @@ export default function Index() {
   const { currentUser } = useContext(AuthContext);
   const [playlists, setPlaylists] = useState([]);
   const [songs, setSongs] = useState([]);
-  const { dispatch } = useContext(PlaylistContext); // Destructure dispatch here
+  //const { dispatch } = useContext(PlaylistContext); // Destructure dispatch here
   //const [localSongs, setLocalSongs] = useState([]);
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export default function Index() {
       try {
         const fetchedSongs = await api.fetchAllSongs();
         setSongs(Array.isArray(fetchedSongs) ? fetchedSongs : []);
-        dispatch({ type: ACTIONS.LOAD, payload: { songs: fetchedSongs } }); // Update the reducer
+        //dispatch({ type: ACTIONS.LOAD, payload: { songs: fetchedSongs } }); // Update the reducer
 
       } catch (error) {
         console.error("Failed to fetch songs:", error);
@@ -34,7 +34,7 @@ export default function Index() {
       }
     };
     fetchData();
-  }, [api, dispatch]);
+  }, [api]);
 
   const handleSearch = async (event, query, exactMatch) => {
     event.preventDefault();
