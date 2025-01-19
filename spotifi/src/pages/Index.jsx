@@ -12,7 +12,6 @@ export default function Index() {
   const [playlists, setPlaylists] = useState([]);
   const [songs, setSongs] = useState([]);
   const { dispatch } = useContext(PlaylistContext); // Destructure dispatch here
-  //const [localSongs, setLocalSongs] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,7 +66,6 @@ export default function Index() {
               artist: "unknown",
               src: file.name,
               owner: currentUser?.username || "unknown", // Use currentUser for owner info
-
             };
 
             try {
@@ -104,9 +102,9 @@ export default function Index() {
         <div id="songs-list">
           <h1>Recommendations</h1>
           {songs
-            .filter((song) => !song.isLocal) // Exclure les chansons locales
+            .filter((song) => !song.isLocal) // Exclude local songs
             .map((song, idx) => (
-              <Song key={song.id} song={song} index={idx + 1} />
+              <Song key={song.id} song={song} index={idx + 1} onClick={() => playSong(idx + 1)} />
             ))}
         </div>
 
@@ -121,7 +119,12 @@ export default function Index() {
               songs
                 .filter(song => song.isLocal && song.owner === currentUser.username)
                 .map((song, idx) => (
-                  <Song key={song.id} song={song} index={idx + 1} />
+                  <Song
+                    key={song.id}
+                    song={song}
+                    index={idx + 1 + songs.filter(song => !song.isLocal).length} // Adjust index for local songs
+                    onClick={() => playSong(idx + 1 + songs.filter(song => !song.isLocal).length)} // Pass adjusted index
+                  />
                 ))
             ) : (
               <p>Aucune chanson locale disponible</p>
