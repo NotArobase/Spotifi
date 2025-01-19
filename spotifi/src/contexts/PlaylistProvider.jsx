@@ -10,6 +10,7 @@ const PlaylistProvider = ({ children }) => {
     currentSong: "rien",
     shuffle: false,
     audio: new Audio(),
+    loopMode: "none",
   });
   const api = new HTTPManager();
   return <PlaylistContext.Provider value={{ state, dispatch, api }}>{children}</PlaylistContext.Provider>;

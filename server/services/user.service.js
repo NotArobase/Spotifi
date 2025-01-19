@@ -1,15 +1,23 @@
 const { FileSystemManager } = require("./file_system_manager");
 const { dbService } = require("./database.service");
 const DB_CONSTS = require("../utils/env");
-
 const path = require("path");
+const { randomUUID } = require("crypto");
 
 class UserService {
 
   constructor () {
-    this.JSON_PATH = path.join(__dirname + "../../data/users.json");
+    this.JSON_PATH = path.join(__dirname + "../data/users.json");
     this.fileSystemManager = new FileSystemManager();
     this.dbService = dbService;
+
+    this.dbService.connectToServer(DB_CONSTS.DB_URI)
+    .then(() => {
+      console.log('Database connected in UserService');
+    })
+    .catch((error) => {
+      console.error('Error connecting to database in UserService:', error); 
+    });
   }
 
   get collection () {
@@ -22,20 +30,16 @@ class UserService {
    * @returns {Promise<Object>} - The created user
    */
   async createUser(userData) {
-    try {
-      const { username, password } = userData;
+    try { const { username, password } = userData;
       if (!username || !password) {
-        throw new Error('username ou password manquant');
+      throw new Error('username ou password manquant');
       }
-      const result = await this.collection.insertOne({ username, password });
-
+      result = await this.collection.insertOne({ username, password });
       const createdUser = await this.collection.findOne({ _id: result.insertedId });
-
-      return createdUser; // Return le user créé
+      return createdUser;
     } catch (error) {
-      throw new Error('Error creating user: ' + error.message);
+      throw new Error('Error creating user: ' + error.message); }
     }
-  }
 
   /**
    * Delete un user à partir du username
@@ -64,6 +68,30 @@ class UserService {
       throw new Error('Error checking user existence: ' + error.message);
     }
   }
+
+  /**
+   * get the playlist count of a user
+   * @param {string} userID - The user Id of the user to get the playlist count
+   * @returns {Promise<Object|null>} - playlist count
+   */
+  async getPlaylistsCountForUser(userId) {
+      try {
+        // Vérifie que l'utilisateur existe d'abord (optionnel mais recommandé)
+        const userExists = await this.collection.findOne({ _id: userId });
+        if (!userExists) {
+          throw new Error("User not found");
+        }
+    
+        // Compte les playlists pour l'utilisateur donné
+        const playlistsCollection = this.dbService.db.collection("playlists"); // Assurez-vous que "playlists" est le bon nom de la collection
+        const playlistsCount = await playlistsCollection.countDocuments({ user_id: userId });
+    
+        return playlistsCount;
+      } catch (error) {
+        console.error("Error fetching playlists count for user:", error.message);
+        throw new Error("Failed to fetch playlists count");
+      }
+    }
 
   /**
    * Get user by username
@@ -108,6 +136,38 @@ class UserService {
       throw new Error('Error updating user password: ' + error.message);
     }
   }
+
+  /**
+   * Add a playlist for a specific user
+   * @param {string} userID - The Id of the user to add playlist
+   * @param {object} playlist -  The playlist to add
+   * @returns  The updated user or null if not found
+   */
+  async addPlaylistForUser(userId, playlist) {
+    playlist.id = randomUUID();
+    try {
+      const playlistsCollection = this.dbService.db.collection(DB_CONSTS.DB_COLLECTION_PLAYLISTS);
+  
+      // Vérifie si l'utilisateur a déjà 10 playlists
+      const playlistCount = await playlistsCollection.countDocuments({ user_id: userId });
+      if (playlistCount >= 10) {
+        throw new Error("Playlist limit reached. A user can only have up to 10 playlists.");
+      }
+  
+      // Ajoute la nouvelle playlist
+      const result = await playlistsCollection.insertOne({
+        user_id: userId,
+        ...playlist,
+      });
+  
+      return playlist;
+    } catch (error) {
+      console.error("Error adding playlist for user:", error.message);
+      throw error;
+    }
+  }
+  
+
 }
 
 module.exports = {UserService};

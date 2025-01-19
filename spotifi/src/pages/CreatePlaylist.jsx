@@ -44,14 +44,28 @@ export default function CreatePlaylist() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!data.name || !data.description) return;
-    if (params.id) {
-      api.updatePlaylist(data);
-    } else {
-      api.addNewPlaylist(data);
+    if (!data.name || !data.description) {
+      alert("Veuillez remplir tous les champs.");
+      return;
     }
-    navigate("/index");
-  };
+    try {
+      const userId = currentUser?.id; // Utilise l'ID utilisateur depuis AuthContext
+      if (!userId) {
+        alert("Utilisateur non connecté.");
+        return;
+      }
+        if (params.id) {
+          await api.updatePlaylist(data); // Mise à jour d'une playlist existante
+          alert("Playlist mise à jour avec succès !");
+        } else {
+          await api.addNewPlaylistForUser(userId, data); // Ajout d'une nouvelle playlist
+          alert("Playlist créée avec succès !");
+        }
+        navigate("/index");
+      } catch (error) {
+        alert("Une erreur est survenue lors de la soumission de la playlist.");
+      }
+    };
 
   const addItemSelect = (event) => {
     event.preventDefault();
