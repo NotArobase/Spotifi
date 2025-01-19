@@ -32,7 +32,7 @@ export default function Index() {
       }
     };
     fetchData();
-  }, [api,dispatch]);
+  }, [api, dispatch]);
 
   const handleSearch = async (event, query, exactMatch) => {
     event.preventDefault();
