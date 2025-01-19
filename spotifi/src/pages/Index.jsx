@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import Playlist from "../components/Playlist";
+import { ACTIONS } from "../reducers/reducer";
 import PlaylistContext from "../contexts/PlaylistContext";
 import Song from "../components/Song";
 import SearchBar from "../components/SearchBar";
