@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import Playlist from "../components/Playlist";
-//import { ACTIONS } from "../reducers/reducer";
+import { ACTIONS } from "../reducers/reducer";
 import PlaylistContext from "../contexts/PlaylistContext";
 import Song from "../components/Song";
 import SearchBar from "../components/SearchBar";
@@ -11,7 +11,7 @@ export default function Index() {
   const { currentUser } = useContext(AuthContext);
   const [playlists, setPlaylists] = useState([]);
   const [songs, setSongs] = useState([]);
-  //const { dispatch } = useContext(PlaylistContext); // Destructure dispatch here
+  const { dispatch } = useContext(PlaylistContext); // Destructure dispatch here
   //const [localSongs, setLocalSongs] = useState([]);
 
   useEffect(() => {
@@ -23,18 +23,23 @@ export default function Index() {
         console.error("Failed to fetch playlists:", error);
         setPlaylists([]);
       }
+
       try {
         const fetchedSongs = await api.fetchAllSongs();
-        setSongs(Array.isArray(fetchedSongs) ? fetchedSongs : []);
-        //dispatch({ type: ACTIONS.LOAD, payload: { songs: fetchedSongs } }); // Update the reducer
 
+        // Check if fetchedSongs is different from current state
+        if (fetchedSongs.length > 0 && JSON.stringify(fetchedSongs) !== JSON.stringify(songs)) {
+          setSongs(fetchedSongs); // Set songs locally
+          dispatch({ type: ACTIONS.LOAD, payload: { songs: fetchedSongs } }); // Dispatch only if songs are new
+        }
       } catch (error) {
         console.error("Failed to fetch songs:", error);
-        setSongs([]);
+        setSongs([]); // Set songs to an empty array on error
       }
     };
+
     fetchData();
-  }, [api]);
+  }, [api, dispatch, songs]); // Dependency on songs, to check if it's different
 
   const handleSearch = async (event, query, exactMatch) => {
     event.preventDefault();
