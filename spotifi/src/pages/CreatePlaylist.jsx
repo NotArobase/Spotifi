@@ -51,11 +51,11 @@ export default function CreatePlaylist() {
     }
     try {
       const userId = currentUser?.username; // Utilise l'ID utilisateur depuis AuthContext
-      if (playlist.owner !== userId) {
-        alert("Utilisateur non connecté.");
-        return;
-      }
         if (params.id) {
+          if (playlist.owner !== userId) {
+            alert("Utilisateur non connecté.");
+            return;
+          }
           await api.updatePlaylist(data); // Mise à jour d'une playlist existante
           alert("Playlist mise à jour avec succès !");
         } else {
@@ -157,7 +157,7 @@ export default function CreatePlaylist() {
           <legend>Chansons</legend>
           <datalist id="song-dataList">
             {songs.map((song) => (
-              <option key={song.id} value={song.name} />
+              <option key={song._id} value={song.name} />
             ))}
           </datalist>
           <button id="add-song-btn" className="fa fa-plus" onClick={addItemSelect}></button>
