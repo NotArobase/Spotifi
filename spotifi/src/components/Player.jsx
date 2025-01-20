@@ -79,29 +79,34 @@ export default function Player() {
   };
 
   useEffect(() => {
-    state.audio.addEventListener("timeupdate", () => {
+    const handleTimeUpdate = () => {
       const position = (100 * state.audio.currentTime) / state.audio.duration;
       setCurrentTime(formatTime(state.audio.currentTime));
       setTimeLine(!isNaN(state.audio.duration) ? position : 0);
-    });
+    };
 
-    state.audio.addEventListener("ended", () => {
+    const handleEnded = () => {
       switch (state.loopMode) {
         case "single":
-            state.audio.currentTime = 0;
-            state.audio.play();
-            break;
-        case "playlist": // Si l'action NEXT ne gère pas la boucle de playlist, on garde ce cas
-            playNextSong();
-            break;
-        default: // Cas "none" et tous les autres cas non gérés explicitement
-            dispatch({ type: ACTIONS.STOP });
-    }
-});
+          if (state.audio.currentTime === state.audio.duration) {
+            state.audio.currentTime = 0; state.audio.play();
+          }
+          break;
+        case "playlist":
+          playNextSong();
+          break;
+        default:
+          dispatch({ type: ACTIONS.STOP });
+        }
+      };
 
+    state.audio.addEventListener("timeupdate", handleTimeUpdate);
+    state.audio.addEventListener("ended", handleEnded);
     bindShortcuts();
 
     return () => {
+      state.audio.removeEventListener("timeupdate", handleTimeUpdate);
+      state.audio.removeEventListener("ended", handleEnded);
       document.removeEventListener("keydown", shortcutHandler);
       dispatch({ type: ACTIONS.STOP }); // On arrête le son lorsque le component n'est plus présent
     };
