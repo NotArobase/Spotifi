@@ -86,12 +86,12 @@ export default function CreatePlaylist() {
 
   const getIdFromName = (elementName) => {
     const element = songs.find((element) => element.name === elementName);
-    const id = element ? element.id : -1;
+    const id = element ? element._id : -1;
     return id;
   };
 
   const getNameFromId = (elementId, songs) => {
-    const song = songs.find((song) => song.id === elementId);
+    const song = songs.find((song) => song._id === elementId);
     const name = song ? song.name : "";
     return name;
   };

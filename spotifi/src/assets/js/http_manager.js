@@ -168,7 +168,7 @@ export default class HTTPManager {
   // Update an existing playlist on the server
   async updatePlaylist (playlist) {
     try {
-      await HTTPInterface.PUT(`${this.playlistBaseURL}/${playlist.id}`, playlist);
+      await HTTPInterface.PUT(`${this.playlistBaseURL}/${playlist._id}`, playlist);
     } catch (err) {
       window.alert("An error has occurred while updating the playlist", err);
     }

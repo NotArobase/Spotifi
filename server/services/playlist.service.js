@@ -3,6 +3,7 @@ const { dbService } = require("./database.service");
 const DB_CONSTS = require("../utils/env");
 const path = require("path");
 const { randomUUID } = require("crypto");
+const { ObjectId } = require('mongodb');
 
 class PlaylistService {
   constructor() {
@@ -29,7 +30,7 @@ class PlaylistService {
    * @returns Retourne la playlist en fonction de son id
    */
   async getPlaylistById(id) {
-    const query = { id: id };
+    const query = { _id: new ObjectId(id) };
     let playlist = await this.collection.findOne(query);
     return playlist;
   }
@@ -40,7 +41,6 @@ class PlaylistService {
    * @returns retourne la playlist ajoutée
    */
   async addPlaylist(playlist) {
-    playlist.id = randomUUID();
     await this.collection.insertOne(playlist);
     return playlist;
   }

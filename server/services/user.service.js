@@ -144,7 +144,6 @@ class UserService {
    * @returns  The updated user or null if not found
    */
   async addPlaylistForUser(userId, playlist) {
-    playlist.id = randomUUID();
     try {
       const playlistsCollection = this.dbService.db.collection(DB_CONSTS.DB_COLLECTION_PLAYLISTS);
   

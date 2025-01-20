@@ -93,7 +93,7 @@ export default function Index() {
           <h1>Mes Playlists</h1>
           <section id="playlist-container" className="playlist-container">
             {playlists.map((playlist) => (
-              <Playlist key={playlist.id} playlist={playlist} />
+              <Playlist key={playlist._id} playlist={playlist} />
             ))}
           </section>
         </div>
@@ -104,7 +104,7 @@ export default function Index() {
           {songs
             .filter((song) => !song.isLocal) // Exclude local songs
             .map((song, idx) => (
-              <Song key={song.id} song={song} index={idx + 1} onClick={() => playSong(idx + 1)} />
+              <Song key={song._id} song={song} index={idx + 1} onClick={() => playSong(idx + 1)} />
             ))}
         </div>
 
@@ -120,7 +120,7 @@ export default function Index() {
                 .filter(song => song.isLocal && song.owner === currentUser.username)
                 .map((song, idx) => (
                   <Song
-                    key={song.id}
+                    key={song._id}
                     song={song}
                     index={idx + 1 + songs.filter(song => !song.isLocal).length} // Adjust index for local songs
                     onClick={() => playSong(idx + 1 + songs.filter(song => !song.isLocal).length)}
