@@ -13,6 +13,10 @@ export default function Index() {
   const [songs, setSongs] = useState([]);
   const { dispatch } = useContext(PlaylistContext); // Destructure dispatch here
 
+  const playSong = () => {
+      dispatch({ type: ACTIONS.PLAY, payload: { index: (index - 1) } });
+    };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
