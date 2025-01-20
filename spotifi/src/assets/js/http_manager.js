@@ -148,22 +148,13 @@ export default class HTTPManager {
   }
 
   // Add a new playlist to the server
-  // async addNewPlaylist (playlist) {
-  //   try {
-  //     await HTTPInterface.POST(`${this.playlistBaseURL}`, playlist);
-  //   } catch (err) {
-  //     window.alert("An error has occurred while adding a new playlist", err);
-  //   }
-  // }
-
-  // Add a new playlist for the user
-  async addNewPlaylistForUser(userId, playlist) {
-    try {
-      await HTTPInterface.POST(`${this.playlistBaseURL}`, playlist);
-    } catch (err) {
-      window.alert("An error has occurred while adding a new playlist", err);
-    }
-  }
+   async addNewPlaylist (playlist) {
+     try {
+       await HTTPInterface.POST(`${this.playlistBaseURL}`, playlist);
+     } catch (err) {
+       window.alert("An error has occurred while adding a new playlist", err);
+     }
+   }
 
   // Update an existing playlist on the server
   async updatePlaylist (playlist) {

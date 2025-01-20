@@ -15,6 +15,7 @@ export default function CreatePlaylist() {
     name: "",
     description: "",
     songs: [],
+    owner: currentUser.username,
   });
 
   useEffect(() => {
@@ -49,8 +50,8 @@ export default function CreatePlaylist() {
       return;
     }
     try {
-      const userId = currentUser?.id; // Utilise l'ID utilisateur depuis AuthContext
-      if (!userId) {
+      const userId = currentUser?.username; // Utilise l'ID utilisateur depuis AuthContext
+      if (playlist.owner !== userId) {
         alert("Utilisateur non connecté.");
         return;
       }
@@ -58,7 +59,7 @@ export default function CreatePlaylist() {
           await api.updatePlaylist(data); // Mise à jour d'une playlist existante
           alert("Playlist mise à jour avec succès !");
         } else {
-          await api.addNewPlaylistForUser(userId, data); // Ajout d'une nouvelle playlist
+          await api.addNewPlaylist(data); // Ajout d'une nouvelle playlist
           alert("Playlist créée avec succès !");
         }
         navigate("/index");
