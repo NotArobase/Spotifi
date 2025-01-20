@@ -2,11 +2,11 @@ import React, { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PlaylistContext from "../contexts/PlaylistContext";
 import { AuthContext } from '../contexts/AuthContext';
-//import { loadForEdit } from "../assets/js/utils";
 
 export default function CreatePlaylist() {
   const api = useContext(PlaylistContext).api;
   const { currentUser } = useContext(AuthContext);
+  const currentUserName = currentUser.username;
   const params = useParams();
   const navigate = useNavigate();
   const [songs, setSongs] = useState([]);
@@ -15,7 +15,7 @@ export default function CreatePlaylist() {
     name: "",
     description: "",
     songs: [],
-    owner: currentUser.username,
+    owner: currentUserName,
   });
 
   useEffect(() => {
@@ -50,23 +50,25 @@ export default function CreatePlaylist() {
       return;
     }
     try {
-      const userId = currentUser?.username; // Utilise l'ID utilisateur depuis AuthContext
-        if (params.id) {
-          if (playlist.owner !== userId) {
-            alert("Utilisateur non connecté.");
-            return;
-          }
-          await api.updatePlaylist(data); // Mise à jour d'une playlist existante
-          alert("Playlist mise à jour avec succès !");
-        } else {
-          await api.addNewPlaylist(data); // Ajout d'une nouvelle playlist
-          alert("Playlist créée avec succès !");
+      const userId = currentUser?.username; // Use user ID from AuthContext
+      if (params.id) {
+        if (data.owner !== userId) { // Ensure owner is the current user
+          alert("Utilisateur non connecté.");
+          return;
         }
-        navigate("/index");
-      } catch (error) {
-        alert("Une erreur est survenue lors de la soumission de la playlist.");
+        console.log(data);
+        await api.updatePlaylist(data); // Update the existing playlist
+        alert("Playlist mise à jour avec succès !");
+      } else {
+        setData({ ...data, owner: userId }); // Ensure owner is set when creating a new playlist
+        await api.addNewPlaylist(data); // Add a new playlist
+        alert("Playlist créée avec succès !");
       }
-    };
+      navigate("/index");
+    } catch (error) {
+      alert("Une erreur est survenue lors de la soumission de la playlist.");
+    }
+  };
 
   const addItemSelect = (event) => {
     event.preventDefault();
@@ -101,18 +103,18 @@ export default function CreatePlaylist() {
     setData({ ...data, name: event.target.value });
   };
 
-    const handleChangeInput = (event, index) => {
-      const newSongChoises = addedSongs;
-      newSongChoises[index] = event.target.value;
-      setAddedSongs(newSongChoises);
-      const allSongs = addedSongs
-        .map((song) => {
-          const id = getIdFromName(song);
-          if (id !== -1) return { id };
-        })
-        .filter((x) => x !== undefined);
-      setData({ ...data, songs: allSongs });
-    };
+  const handleChangeInput = (event, index) => {
+    const newSongChoises = addedSongs;
+    newSongChoises[index] = event.target.value;
+    setAddedSongs(newSongChoises);
+    const allSongs = addedSongs
+      .map((song) => {
+        const id = getIdFromName(song);
+        if (id !== -1) return { id };
+      })
+      .filter((x) => x !== undefined);
+    setData({ ...data, songs: allSongs });
+  };
 
   const handleDescriptionChange = (event) => {
     setData({ ...data, description: event.target.value });
