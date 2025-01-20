@@ -61,7 +61,16 @@ class PlaylistService {
       throw new Error('Playlist _id is required.');
     }
 
-    const filter = { _id: new ObjectId(playlist._id) }; // Convert string to ObjectId
+    let objectId;
+    try {
+      objectId = ObjectId.isValid(playlist._id) ? new ObjectId(playlist._id) : null;
+    } catch {
+      throw new Error('Invalid _id format.');
+    }
+    if (!objectId) {
+      throw new Error('Invalid ObjectId provided.');
+    }
+    const filter = { _id: objectId };
     delete playlist._id; // _id est immutable
     const updateQuery = { $set: playlist };
 
