@@ -121,10 +121,7 @@ export default function reducer(state, action) {
     case ACTIONS.SHUFFLE:
       return { ...state, shuffle: !state.shuffle };
     case ACTIONS.LOOP:
-      return {
-        ...state,
-        loopMode: action.payload, // Modes : "none", "single", "playlist"
-      };
+      return { ...state, loopMode: action.payload }; // Modes : "none", "single", "playlist"
     default:
       return state;
   }
