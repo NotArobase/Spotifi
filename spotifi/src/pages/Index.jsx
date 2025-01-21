@@ -12,6 +12,7 @@ export default function Index() {
   const [playlists, setPlaylists] = useState([]);
   const [songs, setSongs] = useState([]);
   const { dispatch } = useContext(PlaylistContext); // Destructure dispatch here
+  const [setLocalSongs] = useState([]);
 
   const playSong = (index) => {
     dispatch({ type: ACTIONS.PLAY, payload: { index: index - 1 } });
@@ -78,8 +79,6 @@ export default function Index() {
             }
           }
         }
-
-        setLocalSongs(files);
       } catch (err) {
         console.error("Error accessing the local folder:", err);
       }
