@@ -54,4 +54,32 @@ router.delete("/:username", async (request, response) => {
   }
 });
 
+/**
+ * Retourne les chansons d'un utilisateur en fonction de son id
+ * @memberof module:routes/users
+ * @name GET /users/:id/songs
+ */
+router.get("/:username/songs", async (request, response) => {
+  try {
+    const songs = await userService.getUserSongs(request.params.username);
+    response.status(HTTP_STATUS.SUCCESS).json(songs);
+  } catch (error) {
+    response.status(HTTP_STATUS.SERVER_ERROR).json(error);
+  }
+});
+
+/**
+ * Retourne les playlists d'un utilisateur en fonction de son id
+ * @memberof module:routes/users
+ * @name GET /users/:id/playlists
+ */
+router.get("/:username/playlists", async (request, response) => {
+  try {
+    const playlists = await userService.getUserPlaylists(request.params.username);
+    response.status(HTTP_STATUS.SUCCESS).json(playlists);
+  } catch (error) {
+    response.status(HTTP_STATUS.SERVER_ERROR).json(error);
+  }
+});
+
 module.exports = { router, userService };
