@@ -106,7 +106,7 @@ class UserService {
    */
   async getUserByUsername(username) {
     try {
-      return await this.collection.findOne({ username });
+      return await this.collection.findOne({ username: username });
     } catch (error) {
       throw new Error('Error retrieving user: ' + error.message);
     }

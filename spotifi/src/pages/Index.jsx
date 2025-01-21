@@ -20,7 +20,7 @@ export default function Index() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const fetchedPlaylists = await api.getUserPlaylists(currentUser._id);
+        const fetchedPlaylists = await api.getUserPlaylists(currentUser.username);
         setPlaylists(fetchedPlaylists);
       } catch (error) {
         console.error("Failed to fetch playlists:", error);
