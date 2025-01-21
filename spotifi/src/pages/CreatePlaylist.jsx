@@ -99,8 +99,9 @@ export default function CreatePlaylist() {
           n_playlist = currentUser.N_playlist;
           if (n_playlist < MAX_PLAYLISTS) {
             await api.addNewPlaylist(data); // Add a new playlist
-            await handleIncrement(); // Call handleIncrement
-          alert("Playlist créée avec succès !");
+            await handleIncrement(); // Call handle Increment
+            alert(`IL ${n_playlist}`);
+            alert("Playlist créée avec succès !");
           } else {
             alert("Vous ne pouvez pas créer plus de 10 playlists.");
           }
