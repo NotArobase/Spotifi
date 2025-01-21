@@ -1,21 +1,20 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode'; // Use named export here
+import { jwtDecode } from 'jwt-decode';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const checkAuth = () => {
     const token = localStorage.getItem('authToken');
-
     if (token) {
-      setIsAuthenticated(true);
-
       try {
         const user = jwtDecode(token); // Decodes token to get user info
         setCurrentUser(user);
+        setIsAuthenticated(true);
       } catch (error) {
         console.error('Failed to decode token:', error);
         setIsAuthenticated(false);
@@ -25,10 +24,10 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(false);
       setCurrentUser(null);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
-    //const token = localStorage.getItem('authToken');
     checkAuth();
 
     window.addEventListener('storage', checkAuth);
@@ -39,7 +38,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, currentUser, checkAuth }}>
+    <AuthContext.Provider value={{ isAuthenticated, currentUser, loading, checkAuth }}>
       {children}
     </AuthContext.Provider>
   );

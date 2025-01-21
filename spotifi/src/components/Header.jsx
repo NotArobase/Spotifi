@@ -8,7 +8,7 @@ const Header = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
-    window.location.reload();
+    window.location.href = '/login';
   };
 
   return (

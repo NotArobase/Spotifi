@@ -55,6 +55,7 @@ export default function reducer(state, action) {
     }
 
     state.audio.play();
+    console.log(state.audio);
     return index;
   }
 
@@ -77,9 +78,9 @@ export default function reducer(state, action) {
   }
 
   function muteToggle() {
-    const isLoop = state.loop === "loop";
-    state.loop = isLoop ? 1 : 0;
-    return !isLoop;
+    const isMuted = state.audio.volume === 0;
+    state.audio.volume = isMuted ? 1 : 0;
+    return !isMuted;
   }
 
   switch (action.type) {
@@ -94,7 +95,7 @@ export default function reducer(state, action) {
       const newIndex = action.payload.index === -1 ? state.currentSongIndex : action.payload.index;
       console.log("Playing song at index:", newIndex);
       console.log(state.songs[newIndex]);
-      playSong(newIndex);
+      playSong(action.payload.index);
       const currentSong = state.songs[newIndex]?.name || "Unknown Song"; // Ensure safe access to name
       return {
         ...state,

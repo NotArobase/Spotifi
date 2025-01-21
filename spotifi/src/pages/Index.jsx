@@ -20,7 +20,7 @@ export default function Index() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const fetchedPlaylists = await api.fetchAllPlaylists();
+        const fetchedPlaylists = await api.getUserPlaylists(currentUser.username);
         setPlaylists(fetchedPlaylists);
       } catch (error) {
         console.error("Failed to fetch playlists:", error);
@@ -28,7 +28,7 @@ export default function Index() {
       }
 
       try {
-        const fetchedSongs = await api.fetchAllSongs();
+        const fetchedSongs = await api.getUserSongs(currentUser.username);
         if (fetchedSongs.length > 0 && JSON.stringify(fetchedSongs) !== JSON.stringify(songs)) {
           setSongs(fetchedSongs);
           dispatch({ type: ACTIONS.LOAD, payload: { songs: fetchedSongs } });
@@ -40,13 +40,14 @@ export default function Index() {
     };
 
     fetchData();
-  }, [api, dispatch, songs, currentUser.username]);
-
+  //}, [api, dispatch, songs, currentUser.username]);
+    }, [api, dispatch, currentUser.username]);
   const handleSearch = async (event, query, exactMatch) => {
     event.preventDefault();
     const searchResults = await api.search(query, exactMatch);
     setPlaylists(searchResults.playlists);
     setSongs(searchResults.songs);
+    console.log("Search results:", searchResults);
   };
 
   const handleLocalFolder = async () => {
@@ -77,8 +78,6 @@ export default function Index() {
             }
           }
         }
-
-        setLocalSongs(files);
       } catch (err) {
         console.error("Error accessing the local folder:", err);
       }
@@ -94,11 +93,14 @@ export default function Index() {
         <div id="playlist-list">
           <h1>Mes Playlists</h1>
           <section id="playlist-container" className="playlist-container">
-            {playlists
-              .filter((playlist) => playlist.owner === currentUser.username) // Filter playlists here
-              .map((playlist) => (
-                <Playlist key={playlist._id} playlist={playlist} />
-              ))}
+            {playlists.length > 0 ? (
+              playlists
+                .map((playlist) => (
+                  <Playlist key={playlist._id} playlist={playlist} />
+                ))
+            ) : (
+              <p>Aucune playlist disponible</p>
+            )}
           </section>
         </div>
 
@@ -107,6 +109,7 @@ export default function Index() {
           <h1>Recommendations</h1>
           {songs
             .filter((song) => !song.isLocal) // Exclude local songs
+            .sort((a, b) => (b.count || 0) - (a.count || 0))
             .map((song, idx) => (
               <Song key={song._id} song={song} index={idx + 1} onClick={() => playSong(idx + 1)} />
             ))}
@@ -119,9 +122,9 @@ export default function Index() {
             Accéder au dossier local
           </button>
           <div id="local-songs-list">
-            {songs.filter((song) => song.isLocal && song.owner === currentUser.username).length > 0 ? (
+            {songs.length > 0 ? (
               songs
-                .filter((song) => song.isLocal && song.owner === currentUser.username)
+                .filter((song) => song.isLocal)
                 .map((song, idx) => (
                   <Song
                     key={song._id}

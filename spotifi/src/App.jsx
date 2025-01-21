@@ -14,7 +14,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import VotingPage from "./components/VotingPage";
+import VotingPage from "./pages/VotingPage";
+import SubmissionPage from "./pages/SubmissionPage";
 
 function App() {
   const routes = [
@@ -28,33 +29,32 @@ function App() {
     { path: "/create_playlist", element: <CreatePlaylist />, protected: true },
     { path: "/faq", element: <Faq />, protected: true },
     { path: "/voting", element: <VotingPage />, protected: true },
+    { path: "/submit", element: <SubmissionPage />, protected: true },
   ];
 
   return (
-    <>
     <AuthProvider>
       <Header />
       <div id="container">
-          <PlaylistProvider>
-            <NavBar />
-            <Routes>
-              {routes.map((route, index) => {
-                return route.protected ? (
-                  <Route
-                    key={index}
-                    path={route.path}
-                    element={<ProtectedRoute>{route.element}</ProtectedRoute>}
-                  />
-                ) : (
-                  <Route key={index} path={route.path} element={route.element} />
-                );
-              })}
-            </Routes>
-            <Footer />
-          </PlaylistProvider>
+        <PlaylistProvider>
+          <NavBar />
+          <Routes>
+            {routes.map((route, index) => {
+              return route.protected ? (
+                <Route
+                  key={index}
+                  path={route.path}
+                  element={<ProtectedRoute>{route.element}</ProtectedRoute>}
+                />
+              ) : (
+                <Route key={index} path={route.path} element={route.element} />
+              );
+            })}
+          </Routes>
+          <Footer />
+        </PlaylistProvider>
       </div>
     </AuthProvider>
-    </>
   );
 }
 

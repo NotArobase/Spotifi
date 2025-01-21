@@ -39,7 +39,7 @@ router.get("/:id", async (request, response) => {
 /**
  * Supprimer un utilisateur
  * @memberof module:routes/users
- * @name DELETE /users/:id
+ * @name DELETE /users/:username
  */
 router.delete("/:username", async (request, response) => {
   try {
@@ -54,57 +54,31 @@ router.delete("/:username", async (request, response) => {
   }
 });
 
-/** 
- * Retourne le nombre de playlists pour un utilisateur donné
+/**
+ * Retourne les chansons d'un utilisateur en fonction de son id
  * @memberof module:routes/users
- * @name GET /users/:id/playlists-count
- */ 
-router.get("/:id/playlists-count", async (req, res) => {
+ * @name GET /users/:id/songs
+ */
+router.get("/:username/songs", async (request, response) => {
   try {
-    const userId = req.params.id;
-
-    // Valider que l'ID est au bon format MongoDB ObjectID
-    if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: "Invalid user ID format" });
-    }
-
-    const playlistsCount = await userService.getPlaylistsCountForUser(userId);
-    res.status(HTTP_STATUS.SUCCESS).json({ userId, playlistsCount });
-    } catch (error) {
-    res
-      .status(HTTP_STATUS.SERVER_ERROR)
-      .json({ error: "Erreur lors de la récupération des playlists" });
+    const songs = await userService.getUserSongs(request.params.username);
+    response.status(HTTP_STATUS.SUCCESS).json(songs);
+  } catch (error) {
+    response.status(HTTP_STATUS.SERVER_ERROR).json(error);
   }
 });
 
-/** * Création d'un utilisateur
+/**
+ * Retourne les playlists d'un utilisateur en fonction de son id
  * @memberof module:routes/users
- * @name POST /users 
- */ 
-router.post("/", async (req, res) => {
+ * @name GET /users/:id/playlists
+ */
+router.get("/:username/playlists", async (request, response) => {
   try {
-    const userData = req.body;
-    const newUser = await userService.createUser(userData);
-    res.status(HTTP_STATUS.CREATED).json(newUser);
+    const playlists = await userService.getUserPlaylists(request.params.username);
+    response.status(HTTP_STATUS.SUCCESS).json(playlists);
   } catch (error) {
-    res.status(HTTP_STATUS.SERVER_ERROR).json({error: error.message });
-  }
-});
-
-router.post("/:id/playlists", async (req, res) => {
-  try {
-    const userId = req.params.id;
-    const playlistData = req.body;
-
-    // Valider que l'ID est au bon format MongoDB ObjectID
-    if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: "Invalid user ID format" });
-    }
-
-    const playlistId = await userService.addPlaylistForUser(userId, playlistData);
-    res.status(HTTP_STATUS.SUCCESS).json({ message: "Playlist added successfully", playlistId });
-  } catch (error) {
-    res.status(HTTP_STATUS.SERVER_ERROR).json({ error: error.message });
+    response.status(HTTP_STATUS.SERVER_ERROR).json(error);
   }
 });
 

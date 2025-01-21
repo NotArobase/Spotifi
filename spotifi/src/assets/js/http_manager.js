@@ -182,4 +182,20 @@ export default class HTTPManager {
       window.alert("An error has occurred while trying to change the song status", err);
     }
   }
+
+  async getUserSongs (username) {
+    try {
+      return await HTTPInterface.GET(`users/${username}/songs`);
+    } catch (err) {
+      window.alert("An error has occurred while trying to get the user's songs", err);
+    }
+  }
+
+  async getUserPlaylists (username) {
+    try {
+      return await HTTPInterface.GET(`users/${username}/playlists`);
+    } catch (err) {
+      window.alert("An error has occurred while trying to get the user's playlists", err);
+    }
+  }
 }
