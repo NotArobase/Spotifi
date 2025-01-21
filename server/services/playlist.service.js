@@ -56,7 +56,7 @@ class PlaylistService {
     if (!user) {
       throw new Error("User not found.");
     }
-
+    console.log(user.nbPlaylist);
     if (user.nbPlaylist >= 10) {
       throw new Error("Cannot add more than 10 playlists for this user.");
     }
