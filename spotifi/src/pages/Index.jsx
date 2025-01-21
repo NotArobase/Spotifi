@@ -21,6 +21,12 @@ export default function Index() {
     const fetchData = async () => {
       try {
         const fetchedPlaylists = await api.fetchAllPlaylists();
+        if (fetchedPlaylists.length > 0) {
+          const filteredPlaylists = fetchedPlaylists.filter((playlist) => playlist.owner === currentUser.username);
+          setPlaylists(filteredPlaylists);
+        } else {
+          setPlaylists([]);
+        }
         setPlaylists(fetchedPlaylists);
       } catch (error) {
         console.error("Failed to fetch playlists:", error);
@@ -30,7 +36,8 @@ export default function Index() {
       try {
         const fetchedSongs = await api.fetchAllSongs();
         if (fetchedSongs.length > 0 && JSON.stringify(fetchedSongs) !== JSON.stringify(songs)) {
-          setSongs(fetchedSongs);
+          const filteredSongs = fetchedSongs.filter((song) => song.owner === currentUser.username);
+          setSongs(filteredSongs);
           dispatch({ type: ACTIONS.LOAD, payload: { songs: fetchedSongs } });
         }
       } catch (error) {
