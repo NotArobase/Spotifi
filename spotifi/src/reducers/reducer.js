@@ -95,7 +95,7 @@ export default function reducer(state, action) {
       const newIndex = action.payload.index === -1 ? state.currentSongIndex : action.payload.index;
       console.log("Playing song at index:", newIndex);
       console.log(state.songs[newIndex]);
-      playSong(newIndex);
+      playSong(action.payload.index);
       const currentSong = state.songs[newIndex]?.name || "Unknown Song"; // Ensure safe access to name
       return {
         ...state,
