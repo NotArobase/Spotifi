@@ -112,7 +112,7 @@ export default function Player() {
       state.audio.removeEventListener("timeupdate", handleTimeUpdate);
       state.audio.removeEventListener("ended", handleEnded);
       document.removeEventListener("keydown", shortcutHandler);
-      dispatch({ type: ACTIONS.STOP }); // On arrête le son lorsque le component n'est plus présent
+      // dispatch({ type: ACTIONS.STOP }); // On arrête le son lorsque le component n'est plus présent
     };
   }, [state.audio, state.loopMode, dispatch, playNextSong, bindShortcuts]);
   return (
