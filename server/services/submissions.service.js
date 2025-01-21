@@ -16,11 +16,13 @@ class SubmissionsService {
    * @returns {Promise<Object>} The inserted submission document
    */
   async createSubmission(submission) {
+      console.log("Submission received:", submission); // Debug log
     const result = await this.submissionsCollection.insertOne({
       name: submission.name,
       artist: submission.artist,
       genre: submission.genre,
       link: submission.link,
+      description: submission.description,
       approved: false, // Indicate that it's pending/moderation
       createdAt: new Date(),
     });
