@@ -1,5 +1,6 @@
 const { FileSystemManager } = require("./file_system_manager");
 const { dbService } = require("./database.service");
+const { SongService } = require('./songs.service');
 const DB_CONSTS = require("../utils/env");
 const path = require("path");
 const { randomUUID } = require("crypto");
@@ -41,6 +42,16 @@ class PlaylistService {
    * @returns retourne la playlist ajoutée
    */
   async addPlaylist(playlist) {
+    const songService = new SongService();
+
+    // Increment the count for each song in the playlist
+    if (playlist.songs && playlist.songs.length > 0) {
+      await Promise.all(
+        playlist.songs.map((songId) => songService.incrementSongCount(songId))
+      );
+    }
+
+    // Adding playlist
     await this.collection.insertOne(playlist);
     return playlist;
   }
@@ -56,11 +67,12 @@ class PlaylistService {
  */
   async updatePlaylist(playlist) {
     const { ObjectId } = require('mongodb');
+    const songService = new SongService();
     
     if (!playlist._id) {
       throw new Error('Playlist _id is required.');
     }
-
+  
     let objectId;
     try {
       objectId = ObjectId.isValid(playlist._id) ? new ObjectId(playlist._id) : null;
@@ -70,11 +82,36 @@ class PlaylistService {
     if (!objectId) {
       throw new Error('Invalid ObjectId provided.');
     }
+  
     const filter = { _id: objectId };
-    delete playlist._id; // _id est immutable
-    const updateQuery = { $set: playlist };
-
+    
     try {
+      // Fetch the existing playlist from the database
+      const existingPlaylist = await this.collection.findOne(filter);
+      if (!existingPlaylist) {
+        throw new Error('Playlist not found.');
+      }
+  
+      // Identify new songs added to the playlist
+      const existingSongSet = new Set(existingPlaylist.songs.map((id) => id.toString())); // Convert to strings
+      const newSongs = playlist.songs.filter((songId) => !existingSongSet.has(songId.toString())); // Compare strings
+
+      console.log('Existing Songs:', existingSongSet);
+      console.log('Incoming Songs:', playlist.songs);
+      console.log('New Songs:', newSongs);
+
+      // Increment the `count` for newly added songs
+      if (newSongs.length > 0) {
+        await Promise.all(
+          newSongs.map((songId) => songService.incrementSongCount(songId))
+        );
+      }
+
+      // Remove `_id` from the update payload
+      const { _id, ...playlistData } = playlist;
+  
+      // Update the playlist
+      const updateQuery = { $set: playlistData };
       const result = await this.collection.updateOne(filter, updateQuery);
       if (result.matchedCount === 0) {
         console.warn('No playlist found with the specified _id.');

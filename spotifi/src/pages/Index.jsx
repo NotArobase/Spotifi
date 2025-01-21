@@ -107,6 +107,7 @@ export default function Index() {
           <h1>Recommendations</h1>
           {songs
             .filter((song) => !song.isLocal) // Exclude local songs
+            .sort((a, b) => (b.count || 0) - (a.count || 0))
             .map((song, idx) => (
               <Song key={song._id} song={song} index={idx + 1} onClick={() => playSong(idx + 1)} />
             ))}
