@@ -1,14 +1,15 @@
 import React, { useContext } from 'react';
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from '../contexts/AuthContext';
 
 const Header = () => {
   const location = useLocation();
   const { isAuthenticated } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
-    window.location.href = '#/login';
+    navigate('/login');
   };
 
   return (
