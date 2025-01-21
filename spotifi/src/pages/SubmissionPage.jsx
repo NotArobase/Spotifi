@@ -10,7 +10,6 @@ export default function SubmissionPage() {
   const [link, setLink] = useState("");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,7 +45,6 @@ export default function SubmissionPage() {
         throw new Error(resData.error || "Failed to submit song");
       }
 
-      const data = await response.json();
       setMessage("Song submitted successfully!");
       // Clear form
       setName("");

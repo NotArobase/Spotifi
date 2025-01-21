@@ -1,3 +1,4 @@
+/* eslint-disable no-magic-numbers */
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SERVER_URL, SONG_SERVER_URL } from '../assets/js/consts';
