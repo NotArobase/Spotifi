@@ -88,8 +88,9 @@ export default function Player() {
     const handleEnded = () => {
       switch (state.loopMode) {
         case "single":
-          if (state.audio.currentTime === state.audio.duration) {
-            state.audio.currentTime = 0; state.audio.play();
+          if (isFinite(state.audio.currentTime) && state.audio.currentTime === state.audio.duration) {
+            state.audio.currentTime = 0;
+            state.audio.play();
           }
           break;
         case "playlist":

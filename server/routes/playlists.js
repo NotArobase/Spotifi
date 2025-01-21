@@ -1,8 +1,11 @@
 const { HTTP_STATUS } = require("../utils/http");
 const router = require("express").Router();
 const { PlaylistService } = require("../services/playlist.service");
+const { UserService } = require("../services/user.service");
+const { authenticateToken } = require('../middleware/authMiddleware');
 
 const playlistService = new PlaylistService();
+const userService = new UserService();
 
 /**
  * Retourne la liste de toutes les chansons
@@ -59,10 +62,16 @@ router.post("/", async (request, response) => {
  * @memberof module:routes/playlists
  * @name POST /playlists/:user_id
  */
-router.post("/:user_id", async (request, response) => {
+router.post("/:user_id", authenticateToken, async (request, response) => {
   try {
     if (!Object.keys(request.body).length) {
       response.status(HTTP_STATUS.BAD_REQUEST).send();
+      return;
+    }
+    const userId = request.params.user_id;
+    const currentPlaylistsCount = await userService.getPlaylistsCountForUser(userId);
+    if (currentPlaylistsCount >= 10) {
+      response.status(HTTP_STATUS.BAD_REQUEST).json({ message: "User cannot have more than 10 playlists" });
       return;
     }
     const playlist = await playlistService.addPlaylistForUser(request.params.user_id,request.body);

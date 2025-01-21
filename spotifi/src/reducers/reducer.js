@@ -19,10 +19,13 @@ const httpManager = new HTTPManager();
 export default function reducer(state, action) {
   async function playSong(index) {
     if (index === -1) {
-      state.audio.paused ? state.audio.play() : state.audio.pause();
+      if (state.audio.paused) {
+        await state.audio.play().catch(error => console.error("Play interrupted:", error));
+      } else { state.audio.pause(); }
       return state.currentSongIndex;
     }
 
+    
     const song = state.songs[index];
     if (!song) {
       console.error("Song not found in the list");
@@ -111,7 +114,8 @@ export default function reducer(state, action) {
       return { ...state, currentSongIndex: previousIndex, currentSong: state.songs[previousIndex].name };
     case ACTIONS.SEEK:
       const time = (action.payload.time * state.audio.duration) / 100;
-      state.audio.currentTime = time;
+      if (isFinite(time)) {
+        state.audio.currentTime = time; }
       return { ...state };
     case ACTIONS.SCRUB:
       scrubTime(action.payload.delta);

@@ -2,21 +2,21 @@ const { FileSystemManager } = require("./file_system_manager");
 const { dbService } = require("./database.service");
 const DB_CONSTS = require("../utils/env");
 const path = require("path");
+const { MongoClient } = require("mongodb");
 const { randomUUID } = require("crypto");
 
 class UserService {
 
   constructor () {
     this.JSON_PATH = path.join(__dirname + "../data/users.json");
-    this.fileSystemManager = new FileSystemManager();
-    this.dbService = dbService;
-
-    this.dbService.connectToServer(DB_CONSTS.DB_URI)
+    this.client = new MongoClient(DB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+    this.client.connect()
     .then(() => {
-      console.log('Database connected in UserService');
+      this.db = this.client.db(DB_DB);
+      console.log("Connected to MongoDB");
     })
     .catch((error) => {
-      console.error('Error connecting to database in UserService:', error); 
+      console.error("Error connecting to MongoDB:", error);
     });
   }
 

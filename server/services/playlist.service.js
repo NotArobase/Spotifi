@@ -3,6 +3,7 @@ const { dbService } = require("./database.service");
 const DB_CONSTS = require("../utils/env");
 const path = require("path");
 const { randomUUID } = require("crypto");
+const { MongoClient } = require("mongodb");
 
 class PlaylistService {
   constructor() {
