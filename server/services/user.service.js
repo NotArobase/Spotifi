@@ -4,6 +4,12 @@ const DB_CONSTS = require("../utils/env");
 const path = require("path");
 const { randomUUID } = require("crypto");
 
+const { PlaylistService } = require("./playlist.service");
+const { SongService } = require("./songs.service");
+
+const playlistService = new PlaylistService();
+const songService = new SongService();
+
 class UserService {
 
   constructor () {
@@ -34,7 +40,7 @@ class UserService {
       if (!username || !password) {
       throw new Error('username ou password manquant');
       }
-      result = await this.collection.insertOne({ username, password });
+      const result = await this.collection.insertOne({ username, password });
       const createdUser = await this.collection.findOne({ _id: result.insertedId });
       return createdUser;
     } catch (error) {
@@ -100,7 +106,7 @@ class UserService {
    */
   async getUserByUsername(username) {
     try {
-      return await this.collection.findOne({ username });
+      return await this.collection.findOne({ username: username });
     } catch (error) {
       throw new Error('Error retrieving user: ' + error.message);
     }
@@ -165,8 +171,56 @@ class UserService {
       throw error;
     }
   }
-  
 
+  /**
+   * Get user by username
+   * @param {string} username - The username of the user to retrieve
+   * @returns {Promise<Object|null>} - The user data or null if not found
+   */
+  async getUserByUsername(username) {
+    try {
+      return await this.collection.findOne({ username: username });
+    } catch (error) {
+      console.error('Error retrieving user:', error.message);
+      throw new Error('Error retrieving user: ' + error.message);
+    }
+  }
+
+  async getUserSongs(username) {
+    try {
+      const user = await this.getUserByUsername(username);
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      const songs = await songService.getAllSongs();
+
+      const filteredSongs = songs.filter((song) => song.owner === 'all' || song.owner === user.username);
+
+      return filteredSongs;
+    } catch (error) {
+      console.error("Error fetching user's songs:", error.message);
+      throw error;
+    }
+  }
+
+  async getUserPlaylists(username) {
+    try {
+      const user = await this.getUserByUsername(username);
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      const playlists = await playlistService.getAllPlaylists();
+
+      const userPlaylists = playlists.filter((playlist) => playlist.owner === user.username);
+
+      return userPlaylists;
+    } catch (error) {
+      console.error("Error fetching user's playlists:", error.message);
+      throw error;
+    }
+  }
 }
 
 module.exports = {UserService};

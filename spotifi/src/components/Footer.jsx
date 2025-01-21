@@ -4,9 +4,19 @@ import Player from "./Player";
 
 export default function Footer() {
   function loadPlayer(pathname) {
+    if (pathname.startsWith("/playlist") || pathname.startsWith("/index")) {
+      return <Player />;
+    } else {
+      return (
+        <div>
+          <p>
+            Bienvenue sur Spotifi !
+          </p>
+        </div>
+      );
+    }
     return <Player />;
   }
-
   return (
     <footer id="playing-bar" className="p-4 bg-gray-800 text-white">
       {loadPlayer(useLocation().pathname)}

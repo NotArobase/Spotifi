@@ -60,6 +60,40 @@ class SongService {
   }
 
   /**
+   * Incrémente de 1 le count de chanson lorsqu'elle est ajoutée
+   * à une playlist
+   * @param {number} id identifiant de la chanson
+   * @returns {boolean} le nouveau état aimé de la chanson
+   */
+  async incrementSongCount(songId) {
+    const { ObjectId } = require('mongodb');
+
+    let objectId;
+    try {
+      objectId = ObjectId.isValid(songId) ? new ObjectId(songId) : null;
+    } catch {
+      throw new Error('Invalid songId format.');
+    }
+    if (!objectId) {
+      throw new Error('Invalid ObjectId provided.');
+    }
+
+    const filter = { _id: objectId };
+    const update = { $inc: { count: 1 } };
+
+    try {
+      const result = await this.collection.updateOne(filter, update);
+      if (result.matchedCount === 0) {
+        console.warn('No song found with the specified _id.');
+      }
+      return result;
+    } catch (error) {
+      console.error('Error incrementing song count:', error);
+      throw error;
+    }
+  }
+
+  /**
    *
    * Cherche et retourne les chansons qui ont un mot clé spécifique dans leur description (name, artist, genre)
    * Si le paramètre 'exact' est TRUE, la recherche est sensible à la case
