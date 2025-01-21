@@ -42,6 +42,16 @@ export default function NavBar() {
 
           <li>
             <Link
+              to="/submit"
+              className={location.pathname === "/submit" ? "active-page" : ""}
+            >
+              <i className="fa fa-microphone"></i>
+              <span>Submit Song</span>
+            </Link>
+          </li>
+
+          <li>
+            <Link
               to="/about"
               className={location.pathname === "/about" ? "active-page" : ""}
             >
@@ -60,16 +70,6 @@ export default function NavBar() {
             </Link>
           </li>
 
-          {/* New Link for submitting songs */}
-          <li>
-            <Link
-              to="/submit"
-              className={location.pathname === "/submit" ? "active-page" : ""}
-            >
-              <i className="fa fa-microphone"></i>
-              <span>Submit Song</span>
-            </Link>
-          </li>
         </ul>
       </nav>
     </header>

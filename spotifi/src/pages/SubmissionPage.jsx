@@ -1,3 +1,4 @@
+// spotifi/src/pages/SubmissionPage.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SERVER_URL } from "../assets/js/consts";
@@ -11,27 +12,11 @@ export default function SubmissionPage() {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  const isValidURL = (url) => {
-    const pattern = new RegExp(
-      "^(https?:\\/\\/)" + // Protocol
-        "((([a-zA-Z0-9\\-]+)\\.)+[a-zA-Z]{2,})" + // Domain name
-        "(\\/[a-zA-Z0-9\\-._~:?#@!$&'()*+,;=]*)?$",
-      "i"
-    );
-    return pattern.test(url);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validation
+    // Basic validation
     if (!name || !artist || !genre || !link) {
-      setError("All fields are required.");
-      return;
-    }
-
-    if (!isValidURL(link)) {
-      setError("Please enter a valid URL for your song link.");
+      setError("Please fill in all fields.");
       return;
     }
 
@@ -48,34 +33,37 @@ export default function SubmissionPage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ name, artist, genre, link }),
+        body: JSON.stringify({
+          name,
+          artist,
+          genre,
+          link,
+        }),
       });
 
       if (!response.ok) {
         const resData = await response.json();
-        throw new Error(resData.error || "Failed to submit song.");
+        throw new Error(resData.error || "Failed to submit song");
       }
 
-      // Success response
+      const data = await response.json();
       setMessage("Song submitted successfully!");
-      setError("");
+      // Clear form
       setName("");
       setArtist("");
       setGenre("");
       setLink("");
 
-      // Optionally redirect to another page (e.g., /thank-you)
-      setTimeout(() => navigate("/"), 3000);
+      // Optionally, navigate to another page, or show success UI
+      // navigate("/some-other-page");
     } catch (err) {
       setError(err.message);
-      setMessage("");
     }
   };
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen flex flex-col items-center">
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Submit Your Song</h1>
-
       {error && (
         <div className="bg-red-100 text-red-700 px-4 py-2 rounded mb-4">
           {error}
@@ -86,16 +74,12 @@ export default function SubmissionPage() {
           {message}
         </div>
       )}
-
       <form
         onSubmit={handleSubmit}
         className="bg-white rounded shadow-md p-6 w-full max-w-md"
       >
         <div className="mb-4">
-          <label
-            htmlFor="songName"
-            className="block text-gray-700 font-semibold mb-2"
-          >
+          <label className="block text-gray-700 font-semibold mb-2" htmlFor="songName">
             Song Name
           </label>
           <input
@@ -103,17 +87,13 @@ export default function SubmissionPage() {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-500"
-            placeholder="e.g., My Awesome Track"
-            required
+            className="w-full border border-gray-300 rounded px-3 py-2"
+            placeholder="e.g. My Awesome Track"
           />
         </div>
 
         <div className="mb-4">
-          <label
-            htmlFor="artistName"
-            className="block text-gray-700 font-semibold mb-2"
-          >
+          <label className="block text-gray-700 font-semibold mb-2" htmlFor="artistName">
             Artist Name
           </label>
           <input
@@ -121,17 +101,13 @@ export default function SubmissionPage() {
             type="text"
             value={artist}
             onChange={(e) => setArtist(e.target.value)}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-500"
-            placeholder="e.g., John Doe"
-            required
+            className="w-full border border-gray-300 rounded px-3 py-2"
+            placeholder="e.g. John Doe"
           />
         </div>
 
         <div className="mb-4">
-          <label
-            htmlFor="genre"
-            className="block text-gray-700 font-semibold mb-2"
-          >
+          <label className="block text-gray-700 font-semibold mb-2" htmlFor="genre">
             Genre
           </label>
           <input
@@ -139,17 +115,13 @@ export default function SubmissionPage() {
             type="text"
             value={genre}
             onChange={(e) => setGenre(e.target.value)}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-500"
-            placeholder="e.g., Rock, Pop, Hip-Hop..."
-            required
+            className="w-full border border-gray-300 rounded px-3 py-2"
+            placeholder="e.g. Rock, Pop, Hip-hop..."
           />
         </div>
 
         <div className="mb-4">
-          <label
-            htmlFor="songLink"
-            className="block text-gray-700 font-semibold mb-2"
-          >
+          <label className="block text-gray-700 font-semibold mb-2" htmlFor="songLink">
             Song Link
           </label>
           <input
@@ -157,9 +129,8 @@ export default function SubmissionPage() {
             type="text"
             value={link}
             onChange={(e) => setLink(e.target.value)}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-500"
-            placeholder="e.g., https://soundcloud.com/my-awesome-track"
-            required
+            className="w-full border border-gray-300 rounded px-3 py-2"
+            placeholder="URL to SoundCloud, YouTube, etc."
           />
         </div>
 

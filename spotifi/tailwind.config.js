@@ -1,11 +1,11 @@
-//** @type {import('tailwindcss').Config} */
+/** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./src/pages/VotingPage.jsx', './src/assets/css/tailwind-voting.css',
-    './src/**/*.{js,jsx,ts,tsx}', // Include all relevant file paths
+  content: [
+    './src/**/*.{js,jsx,ts,tsx}', // Include all JavaScript and JSX files in src
+    './public/index.html',
   ],
   theme: {
-    extend: {},
+    extend: {}, // Add customizations here
   },
   plugins: [],
-
 };

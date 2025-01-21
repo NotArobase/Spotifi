@@ -14,7 +14,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import VotingPage from "./components/VotingPage";
+import VotingPage from "./pages/VotingPage";
 import SubmissionPage from "./pages/SubmissionPage";
 
 function App() {
