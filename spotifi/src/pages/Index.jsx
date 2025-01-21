@@ -95,11 +95,15 @@ export default function Index() {
         <div id="playlist-list">
           <h1>Mes Playlists</h1>
           <section id="playlist-container" className="playlist-container">
-            {playlists
-              .filter((playlist) => playlist.owner === currentUser.username) // Filter playlists here
-              .map((playlist) => (
-                <Playlist key={playlist._id} playlist={playlist} />
-              ))}
+            {playlists.length > 0 ? (
+              playlists
+                .filter((playlist) => playlist.owner === currentUser.username) // Filter playlists here
+                .map((playlist) => (
+                  <Playlist key={playlist._id} playlist={playlist} />
+                ))
+            ) : (
+              <p>Aucune playlist disponible</p>
+            )}
           </section>
         </div>
 
