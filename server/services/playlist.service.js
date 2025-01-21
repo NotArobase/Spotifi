@@ -93,12 +93,9 @@ class PlaylistService {
       }
   
       // Identify new songs added to the playlist
-      const existingSongSet = new Set(existingPlaylist.songs.map((id) => id.toString())); // Convert to strings
-      const newSongs = playlist.songs.filter((songId) => !existingSongSet.has(songId.toString())); // Compare strings
-
-      console.log('Existing Songs:', existingSongSet);
-      console.log('Incoming Songs:', playlist.songs);
-      console.log('New Songs:', newSongs);
+      const newSongs = playlist.songs.filter(
+        (songId) => !existingPlaylist.songs.some((existingSongId) => existingSongId.id === songId.id)
+      );
 
       // Increment the `count` for newly added songs
       if (newSongs.length > 0) {
