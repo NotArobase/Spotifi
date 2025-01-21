@@ -126,7 +126,7 @@ class PlaylistService {
    * @returns {Promise<boolean>} true si la playlist a été supprimée, false sinon
    */
   async deletePlaylist(id) {
-    const res = await this.collection.findOneAndDelete({ id });
+    const res = await this.collection.findOneAndDelete({_id: new ObjectId(id) });
     return res !== null;
   }
 
