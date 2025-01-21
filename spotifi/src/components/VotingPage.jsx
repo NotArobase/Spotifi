@@ -67,11 +67,11 @@ const VotingPage = () => {
       const response = await fetch(`${SERVER_URL}/api/voting/leaderboard`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to fetch leaderboard');
       }
-  
+
       const data = await response.json();
       setLeaderboard(data);
     } catch (err) {
@@ -80,8 +80,10 @@ const VotingPage = () => {
   };
 
   const toggleVote = async (songId) => {
+    // eslint-disable-next-line no-magic-numbers
     if (votedSongs.length >= 20 && !votedSongs.includes(songId)) {
       setError('You can only vote for up to 20 songs.');
+      // eslint-disable-next-line no-magic-numbers
       setTimeout(() => setError(''), 3000);
       return;
     }
@@ -110,35 +112,29 @@ const VotingPage = () => {
       }
 
       const result = await response.json();
-<<<<<<< HEAD
-      if (result.message === 'Vote removed!') {
-        setVotedSongs(votedSongs.filter(id => id !== songId));
-=======
 
       // Update local state based on the action returned from the server
       if (result.message === 'Vote removed!') {
         setVotedSongs(votedSongs.filter(id => id !== songId));
         // Update the voted status in songs array
->>>>>>> 7f5a287fbef3887b9924654a5433891fd165ad21
         setSongs(songs.map(song =>
           song._id === songId ? { ...song, voted: false } : song
         ));
       } else {
         setVotedSongs([...votedSongs, songId]);
-<<<<<<< HEAD
-=======
         // Update the voted status in songs array
->>>>>>> 7f5a287fbef3887b9924654a5433891fd165ad21
         setSongs(songs.map(song =>
           song._id === songId ? { ...song, voted: true } : song
         ));
       }
 
       setMessage(result.message);
+      // eslint-disable-next-line no-magic-numbers
       setTimeout(() => setMessage(''), 3000);
     } catch (err) {
       console.error('Vote error:', err);
       setError(err.message);
+      // eslint-disable-next-line no-magic-numbers
       setTimeout(() => setError(''), 3000);
     }
   };
