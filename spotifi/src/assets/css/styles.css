@@ -52,14 +52,6 @@ h1 {
   overflow-y: auto;
 }
 
-/* #playing-bar {
-  grid-area: playing-bar;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border: 1px solid var(--main-color);
-} */
-
 #playing-bar {
   grid-area: playing-bar;
   display: flex;
