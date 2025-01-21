@@ -12,7 +12,6 @@ export default function Index() {
   const [playlists, setPlaylists] = useState([]);
   const [songs, setSongs] = useState([]);
   const { dispatch } = useContext(PlaylistContext); // Destructure dispatch here
-  const [setLocalSongs] = useState([]);
 
   const playSong = (index) => {
     dispatch({ type: ACTIONS.PLAY, payload: { index: index - 1 } });
