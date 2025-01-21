@@ -7,8 +7,9 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
-  useEffect(() => {
+  const checkAuth = () => {
     const token = localStorage.getItem('authToken');
+
     if (token) {
       setIsAuthenticated(true);
 
@@ -24,10 +25,21 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(false);
       setCurrentUser(null);
     }
+  };
+
+  useEffect(() => {
+    //const token = localStorage.getItem('authToken');
+    checkAuth();
+
+    window.addEventListener('storage', checkAuth);
+
+    return () => {
+      window.removeEventListener('storage', checkAuth);
+    };
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, currentUser }}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, currentUser, checkAuth }}>
       {children}
     </AuthContext.Provider>
   );

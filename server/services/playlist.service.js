@@ -3,6 +3,7 @@ const { dbService } = require("./database.service");
 const DB_CONSTS = require("../utils/env");
 const path = require("path");
 const { randomUUID } = require("crypto");
+const { ObjectId } = require('mongodb');
 
 class PlaylistService {
   constructor() {
@@ -29,7 +30,7 @@ class PlaylistService {
    * @returns Retourne la playlist en fonction de son id
    */
   async getPlaylistById(id) {
-    const query = { id: id };
+    const query = { _id: new ObjectId(id) };
     let playlist = await this.collection.findOne(query);
     return playlist;
   }
@@ -40,7 +41,6 @@ class PlaylistService {
    * @returns retourne la playlist ajoutée
    */
   async addPlaylist(playlist) {
-    playlist.id = randomUUID();
     await this.collection.insertOne(playlist);
     return playlist;
   }
@@ -49,13 +49,43 @@ class PlaylistService {
    * Modifie une playlist en fonction de son id et met à jour le fichier de toutes les playlists
    * @param {Object} playlist nouveau contenu de la playlist
    */
+  /**
+ * Modifie une playlist en fonction de son id et met à jour le fichier de toutes les playlists
+ * @param {Object} playlist Nouveau contenu de la playlist
+ * @returns {Object} Résultat de l'opération
+ */
   async updatePlaylist(playlist) {
-    const filter = { _id: playlist._id };
+    const { ObjectId } = require('mongodb');
+    
+    if (!playlist._id) {
+      throw new Error('Playlist _id is required.');
+    }
+
+    let objectId;
+    try {
+      objectId = ObjectId.isValid(playlist._id) ? new ObjectId(playlist._id) : null;
+    } catch {
+      throw new Error('Invalid _id format.');
+    }
+    if (!objectId) {
+      throw new Error('Invalid ObjectId provided.');
+    }
+    const filter = { _id: objectId };
     delete playlist._id; // _id est immutable
     const updateQuery = { $set: playlist };
-    const result = await this.collection.updateOne(filter, updateQuery);
-    return result;
+
+    try {
+      const result = await this.collection.updateOne(filter, updateQuery);
+      if (result.matchedCount === 0) {
+        console.warn('No playlist found with the specified _id.');
+      }
+      return result;
+    } catch (error) {
+      console.error('Error updating playlist:', error);
+      throw error;
+    }
   }
+
 
   /**
    * @param {string} id identifiant de la playlist

@@ -11,7 +11,7 @@ export const ACTIONS = {
   SCRUB: "scrub",
   SHUFFLE: "shuffle",
   MUTE: "mute",
-  LOOP: "TOGGLE_LOOP",
+  LOOP: "loop",
 };
 
 const httpManager = new HTTPManager();
@@ -32,15 +32,20 @@ export default function reducer(state, action) {
     console.log("Song details:", song); // Log the song to check the file structure
 
     if (song.isLocal) {
-      // Assuming song.src contains the relative path or the file object
-      const file = song.file || song.src; // Get the file object from metadata
+      try {
+        // Request the user to select a folder if it's a local song
+        const folderHandle = await window.showDirectoryPicker();
+        console.log(song.src);
+        const fileHandle = await folderHandle.getFileHandle(song.src);
 
-      // Check if the file is an instance of File or Blob
-      if (file instanceof File || file instanceof Blob) {
+        // Get the file object from the selected file
+        const file = await fileHandle.getFile();
         console.log("Playing local song:", file);
-        state.audio.src = URL.createObjectURL(file); // Use the file object for local songs
-      } else {
-        console.error("song.file is not a valid File or Blob:", file);
+
+        // Use the file object for local songs
+        state.audio.src = URL.createObjectURL(file);
+      } catch (error) {
+        console.error("Error accessing local file:", error);
       }
     } else {
       // For remote songs, fetch the URL using your HTTPManager
@@ -72,26 +77,29 @@ export default function reducer(state, action) {
   }
 
   function muteToggle() {
-    const isMuted = state.audio.volume === 0;
-    state.audio.volume = isMuted ? 1 : 0;
-    return !isMuted;
+    const isLoop = state.loop === "loop";
+    state.loop = isLoop ? 1 : 0;
+    return !isLoop;
   }
 
   switch (action.type) {
     case ACTIONS.LOAD:
       // préchargement de la 1re chanson de la liste
-      loadSongs(action.payload.songs[0].id);
+      loadSongs(action.payload.songs[0].src);
       return {
         ...state,
         songs: [...action.payload.songs],
       };
     case ACTIONS.PLAY:
       const newIndex = action.payload.index === -1 ? state.currentSongIndex : action.payload.index;
-      playSong(action.payload.index);
+      console.log("Playing song at index:", newIndex);
+      console.log(state.songs[newIndex]);
+      playSong(newIndex);
+      const currentSong = state.songs[newIndex]?.name || "Unknown Song"; // Ensure safe access to name
       return {
         ...state,
         currentSongIndex: newIndex,
-        currentSong: state.songs[newIndex].name,
+        currentSong: currentSong,
       };
     case ACTIONS.STOP:
       state.audio.pause();
@@ -115,14 +123,8 @@ export default function reducer(state, action) {
       return { ...state, mute: muteToggle() };
     case ACTIONS.SHUFFLE:
       return { ...state, shuffle: !state.shuffle };
-    case ACTIONS.TOGGLE_LOOP:
-      const nextLoopMode =
-        state.loopMode === "none"
-          ? "single"
-          : state.loopMode === "single"
-          ? "playlist"
-          : "none";
-        return { ...state, loopMode: nextLoopMode };
+    case ACTIONS.LOOP:
+      return { ...state, loopMode: action.payload }; // Modes : "none", "single", "playlist"
     default:
       return state;
   }
