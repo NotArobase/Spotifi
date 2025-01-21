@@ -164,6 +164,7 @@ export default function CreatePlaylist() {
 
   const deletePlaylist = async (id) => {
     api.deletePlaylist(id);
+    await handleDecrement();
     navigate("/index");
   };
 
