@@ -44,6 +44,23 @@ class PlaylistService {
   async addPlaylist(playlist) {
     const songService = new SongService();
 
+    // Validate that the owner field exists
+    if (!playlist.owner) {
+      throw new Error("Playlist owner is required.");
+    }
+
+    // Get the user's playlist count
+    const userService = require('./user.service').userService; // Import UserService
+    const user = await userService.getUserByUsername(playlist.owner);
+
+    if (!user) {
+      throw new Error("User not found.");
+    }
+
+    if (user.nbPlaylist >= 10) {
+      throw new Error("Cannot add more than 10 playlists for this user.");
+    }
+
     // Increment the count for each song in the playlist
     if (playlist.songs && playlist.songs.length > 0) {
       await Promise.all(
@@ -52,9 +69,14 @@ class PlaylistService {
     }
 
     // Adding playlist
-    await this.collection.insertOne(playlist);
-    return playlist;
+    const result = await this.collection.insertOne(playlist);
+
+    // Update the user's playlist count in the database
+    await userService.updateUserPlaylistsCount(user._id.toString(), user.nbPlaylist + 1);
+
+    return result.ops[0];
   }
+
 
   /**
    * Modifie une playlist en fonction de son id et met à jour le fichier de toutes les playlists
@@ -126,9 +148,26 @@ class PlaylistService {
    * @returns {Promise<boolean>} true si la playlist a été supprimée, false sinon
    */
   async deletePlaylist(id) {
-    const res = await this.collection.findOneAndDelete({ id });
-    return res !== null;
+    const playlist = await this.collection.findOne({ _id: new ObjectId(id) });
+    if (!playlist) {
+      throw new Error("Playlist not found.");
+    }
+
+    const result = await this.collection.deleteOne({ _id: new ObjectId(id) });
+
+    if (result.deletedCount > 0) {
+      // Decrement the user's playlist count
+      const userService = require('./user.service').userService;
+      const user = await userService.getUserByUsername(playlist.owner);
+
+      if (user) {
+        await userService.updateUserPlaylistsCount(user._id.toString(), user.nbPlaylist - 1);
+      }
+    }
+
+    return result.deletedCount > 0;
   }
+
 
   /**
    * Cherche et retourne les playlists qui ont un mot clé spécifique dans leur description (name, description)

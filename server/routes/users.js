@@ -36,6 +36,29 @@ router.get("/:id", async (request, response) => {
   }
 });
 
+/** 
+ * Retourne le nombre de playlists pour un utilisateur donné
+ * @memberof module:routes/users
+ * @name GET /users/:id/playlists-count
+ */ 
+router.get("/:id/playlists-count", async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    // Valider que l'ID est au bon format MongoDB ObjectID
+    if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: "Invalid user ID format" });
+    }
+
+    const playlistsCount = await userService.getPlaylistsCountForUser(userId);
+    res.status(HTTP_STATUS.SUCCESS).json({ userId, playlistsCount });
+    } catch (error) {
+    res
+      .status(HTTP_STATUS.SERVER_ERROR)
+      .json({ error: "Erreur lors de la récupération des playlists" });
+  }
+});
+
 /**
  * Supprimer un utilisateur
  * @memberof module:routes/users
@@ -81,5 +104,34 @@ router.get("/:username/playlists", async (request, response) => {
     response.status(HTTP_STATUS.SERVER_ERROR).json(error);
   }
 });
+
+/**
+ * Met à jour le nombre de playlists pour un utilisateur donné
+ * @memberof module:routes/users
+ * @name PATCH /users/:id/playlists-count
+ */
+router.patch("/:id/playlists-count", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { nbPlaylist } = req.body;
+
+    // Validate userId format
+    if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ error: "Invalid user ID format" });
+    }
+
+    // Pass the responsibility to the service
+    const updatedUser = await userService.updateUserPlaylistsCount(userId, nbPlaylist);
+
+    res.status(HTTP_STATUS.SUCCESS).json(updatedUser);
+  } catch (error) {
+    res
+      .status(HTTP_STATUS.BAD_REQUEST) // Use BAD_REQUEST for user errors
+      .json({ error: error.message });
+  }
+});
+
 
 module.exports = { router, userService };
