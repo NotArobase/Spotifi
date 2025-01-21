@@ -165,9 +165,8 @@ class UserService {
    * @returns  The updated user or null if not found
    */
   async addPlaylistForUser(userId, playlist) {
-    try { playlist.id = randomUUID();
+    try {
       playlist.owner = userId;
-      // Ajouter l'attribut owner
       const result = await this.collection.insertOne(playlist);
       return result.ops[0];
     } catch (error) {
