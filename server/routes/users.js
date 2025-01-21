@@ -39,7 +39,7 @@ router.get("/:id", async (request, response) => {
 /**
  * Supprimer un utilisateur
  * @memberof module:routes/users
- * @name DELETE /users/:id
+ * @name DELETE /users/:username
  */
 router.delete("/:username", async (request, response) => {
   try {
@@ -51,46 +51,6 @@ router.delete("/:username", async (request, response) => {
     }
   } catch (error) {
     response.status(HTTP_STATUS.SERVER_ERROR).json(error);
-  }
-});
-
-/** 
- * Retourne le nombre de playlists pour un utilisateur donné
- * @memberof module:routes/users
- * @name GET /users/:id/playlists-count
- */ 
-router.get("/:id/playlists-count", async (req, res) => {
-  try {
-    const userId = req.params.id;
-
-    // Valider que l'ID est au bon format MongoDB ObjectID
-    if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: "Invalid user ID format" });
-    }
-
-    const playlistsCount = await userService.getPlaylistsCountForUser(userId);
-    res.status(HTTP_STATUS.SUCCESS).json({ userId, playlistsCount });
-    } catch (error) {
-    res
-      .status(HTTP_STATUS.SERVER_ERROR)
-      .json({ error: "Erreur lors de la récupération des playlists" });
-  }
-});
-
-router.post("/:id/playlists", async (req, res) => {
-  try {
-    const userId = req.params.id;
-    const playlistData = req.body;
-
-    // Valider que l'ID est au bon format MongoDB ObjectID
-    if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: "Invalid user ID format" });
-    }
-
-    const playlistId = await userService.addPlaylistForUser(userId, playlistData);
-    res.status(HTTP_STATUS.SUCCESS).json({ message: "Playlist added successfully", playlistId });
-  } catch (error) {
-    res.status(HTTP_STATUS.SERVER_ERROR).json({ error: error.message });
   }
 });
 
