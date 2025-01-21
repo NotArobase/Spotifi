@@ -16,7 +16,11 @@ export default function Player() {
   const { loopMode } = state;
 
   const playSong = () => {
-    dispatch({ type: ACTIONS.PLAY, payload: { index: -1 } });
+    if (state.audio.paused) {
+      dispatch({ type: ACTIONS.PLAY, payload: { index: -1 } });
+    } else {
+      dispatch({ type: ACTIONS.PAUSE });
+    }
   };
 
   // TODO : ajouter une action de jouer la prochaine chanson

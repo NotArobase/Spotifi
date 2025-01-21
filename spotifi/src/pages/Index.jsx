@@ -40,13 +40,14 @@ export default function Index() {
     };
 
     fetchData();
-  }, [api, dispatch, songs, currentUser.username]);
-
+  //}, [api, dispatch, songs, currentUser.username]);
+    }, [api, dispatch, currentUser.username]);
   const handleSearch = async (event, query, exactMatch) => {
     event.preventDefault();
     const searchResults = await api.search(query, exactMatch);
     setPlaylists(searchResults.playlists);
     setSongs(searchResults.songs);
+    console.log("Search results:", searchResults);
   };
 
   const handleLocalFolder = async () => {
