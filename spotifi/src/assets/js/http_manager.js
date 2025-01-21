@@ -183,17 +183,17 @@ export default class HTTPManager {
     }
   }
 
-  async getUserSongs (userId) {
+  async getUserSongs (username) {
     try {
-      return await HTTPInterface.GET(`users/${userId}/songs`);
+      return await HTTPInterface.GET(`users/${username}/songs`);
     } catch (err) {
       window.alert("An error has occurred while trying to get the user's songs", err);
     }
   }
 
-  async getUserPlaylists (userId) {
+  async getUserPlaylists (username) {
     try {
-      return await HTTPInterface.GET(`users/${userId}/playlists`);
+      return await HTTPInterface.GET(`users/${username}/playlists`);
     } catch (err) {
       window.alert("An error has occurred while trying to get the user's playlists", err);
     }
