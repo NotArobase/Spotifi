@@ -1,10 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PlaylistContext from "../contexts/PlaylistContext";
-<<<<<<< HEAD
-=======
 import { AuthContext } from '../contexts/AuthContext';
->>>>>>> 7f5a287fbef3887b9924654a5433891fd165ad21
 
 export default function CreatePlaylist() {
   const api = useContext(PlaylistContext).api;
