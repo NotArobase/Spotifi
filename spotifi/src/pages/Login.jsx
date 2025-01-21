@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
+import { useEffect } from 'react';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
@@ -9,6 +10,10 @@ const LoginPage = () => {
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
   const { checkAuth } = useContext(AuthContext);
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
