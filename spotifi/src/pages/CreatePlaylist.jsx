@@ -11,6 +11,7 @@ export default function CreatePlaylist() {
   const navigate = useNavigate();
   const [songs, setSongs] = useState([]);
   const [addedSongs, setAddedSongs] = useState([""]);
+  const MAX_PLAYLISTS = 10;
   const [data, setData] = useState({
     name: "",
     description: "",
@@ -43,6 +44,40 @@ export default function CreatePlaylist() {
     });
   };
 
+  const handleIncrement = async () => {
+    try {
+      const response = await fetch(`http://localhost:5020/api/users/${currentUser.username}/increment_playlist`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+        });
+      const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to increment N_playlist.');
+        }
+      alert('N_playlist incremented successfully.');
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+      }
+    };
+
+  const handleDecrement = async () => {
+    try {
+      const response = await fetch(`http://localhost:5020/api/users/${currentUser.username}/decrement_playlist`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+        });
+      const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to decrement N_playlist.');
+        }
+      alert('N_playlist decremented successfully.');
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+      }
+    };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!data.name || !data.description) {
@@ -60,10 +95,16 @@ export default function CreatePlaylist() {
         await api.updatePlaylist(data); // Update the existing playlist
         alert("Playlist mise à jour avec succès !");
       } else {
-        setData({ ...data, owner: userId }); // Ensure owner is set when creating a new playlist
-        await api.addNewPlaylist(data); // Add a new playlist
-        alert("Playlist créée avec succès !");
-      }
+          setData({ ...data, owner: userId }); // Ensure owner is set when creating a new playlist
+          n_playlist = currentUser.N_playlist;
+          if (n_playlist < MAX_PLAYLISTS) {
+            await api.addNewPlaylist(data); // Add a new playlist
+            await handleIncrement(); // Call handleIncrement
+          alert("Playlist créée avec succès !");
+          } else {
+            alert("Vous ne pouvez pas créer plus de 10 playlists.");
+          }
+        }
       navigate("/index");
     } catch (error) {
       alert("Une erreur est survenue lors de la soumission de la playlist.");
@@ -122,6 +163,7 @@ export default function CreatePlaylist() {
 
   const deletePlaylist = async (id) => {
     api.deletePlaylist(data.id);
+    await handleDecrement();
     navigate("/index");
   };
 

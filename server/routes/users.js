@@ -77,6 +77,20 @@ router.get("/:id/playlists-count", async (req, res) => {
   }
 });
 
+/** * Création d'un utilisateur
+ * @memberof module:routes/users
+ * @name POST /users 
+ */ 
+router.post("/", async (req, res) => {
+  try {
+    const userData = req.body;
+    const newUser = await userService.createUser(userData);
+    res.status(HTTP_STATUS.CREATED).json(newUser);
+  } catch (error) {
+    res.status(HTTP_STATUS.SERVER_ERROR).json({error: error.message });
+  }
+});
+
 router.post("/:id/playlists", async (req, res) => {
   try {
     const userId = req.params.id;
@@ -89,6 +103,34 @@ router.post("/:id/playlists", async (req, res) => {
 
     const playlistId = await userService.addPlaylistForUser(userId, playlistData);
     res.status(HTTP_STATUS.SUCCESS).json({ message: "Playlist added successfully", playlistId });
+  } catch (error) {
+    res.status(HTTP_STATUS.SERVER_ERROR).json({ error: error.message });
+  }
+});
+
+/**
+ * Incrémente le nombre de playlists d'un utilisateur 
+ * @memberof module:routes/users 
+ * @name PUT /users/:user_id/increment_playlist
+ */
+router.put("/:user_id/increment_playlist", async (req, res) => {
+  try { const userId = req.params.user_id;
+    await userService.incrementPlaylistCount(userId);
+    res.status(HTTP_STATUS.SUCCESS).json({ message: "N_playlist incremented successfully" });
+  } catch (error) {
+    res.status(HTTP_STATUS.SERVER_ERROR).json({ error: error.message }); }
+  });
+
+  /**
+  * Décrémente le nombre de playlists d'un utilisateur 
+  * @memberof module:routes/users 
+  * @name PUT /users/:user_id/decrement_playlist
+  */ 
+ router.put("/:user_id/decrement_playlist", async (req, res) => {
+  try {
+    const userId = req.params.user_id;
+    await userService.decrementPlaylistCount(userId);
+    res.status(HTTP_STATUS.SUCCESS).json({ message: "N_playlist decremented successfully" });
   } catch (error) {
     res.status(HTTP_STATUS.SERVER_ERROR).json({ error: error.message });
   }

@@ -89,7 +89,8 @@ export default function Player() {
       switch (state.loopMode) {
         case "single":
           if (state.audio.currentTime === state.audio.duration) {
-            state.audio.currentTime = 0; state.audio.play();
+            state.audio.currentTime = 0;
+            state.audio.play();
           }
           break;
         case "playlist":

@@ -34,12 +34,38 @@ class UserService {
       if (!username || !password) {
       throw new Error('username ou password manquant');
       }
-      result = await this.collection.insertOne({ username, password });
+      result = await this.collection.insertOne({ username, password, N_playlist: 0});
       const createdUser = await this.collection.findOne({ _id: result.insertedId });
       return createdUser;
     } catch (error) {
       throw new Error('Error creating user: ' + error.message); }
     }
+
+  /**
+  * incremente le nombre de playlist pour un user donné
+  * @param {string} Username - The username of the user to update
+  * @returns 
+  */
+  async incrementPlaylistCount(userId) {
+    try {
+      await this.collection.updateOne( { _id: userId }, { $inc: { N_playlist: 1 }} );
+    } catch (error) {
+      throw new Error('Error incrementing playlist count: ' + error.message);
+    }
+  }
+
+  /**
+  * decrements playlist number of a user 
+  * @param {string} UserID - The userID of the user to update
+  * @returns 
+  */
+  async decrementPlaylistCount(userId) {
+    try {
+      await this.collection.updateOne( { _id: userId }, { $inc: { N_playlist: -1 } } );
+    } catch (error) {
+      throw new Error('Error decrementing playlist count: ' + error.message);
+    }
+  }
 
   /**
    * Delete un user à partir du username
@@ -81,12 +107,7 @@ class UserService {
         if (!userExists) {
           throw new Error("User not found");
         }
-    
-        // Compte les playlists pour l'utilisateur donné
-        const playlistsCollection = this.dbService.db.collection("playlists"); // Assurez-vous que "playlists" est le bon nom de la collection
-        const playlistsCount = await playlistsCollection.countDocuments({ user_id: userId });
-    
-        return playlistsCount;
+        return user ? user.N_playlist : 0;
       } catch (error) {
         console.error("Error fetching playlists count for user:", error.message);
         throw new Error("Failed to fetch playlists count");
@@ -144,25 +165,14 @@ class UserService {
    * @returns  The updated user or null if not found
    */
   async addPlaylistForUser(userId, playlist) {
-    try {
-      const playlistsCollection = this.dbService.db.collection(DB_CONSTS.DB_COLLECTION_PLAYLISTS);
-  
-      // Vérifie si l'utilisateur a déjà 10 playlists
-      const playlistCount = await playlistsCollection.countDocuments({ user_id: userId });
-      if (playlistCount >= 10) {
-        throw new Error("Playlist limit reached. A user can only have up to 10 playlists.");
-      }
-  
-      // Ajoute la nouvelle playlist
-      const result = await playlistsCollection.insertOne({
-        user_id: userId,
-        ...playlist,
-      });
-  
-      return playlist;
+    try { playlist.id = randomUUID();
+      playlist.owner = userId;
+      // Ajouter l'attribut owner
+      const result = await this.collection.insertOne(playlist);
+      return result.ops[0];
     } catch (error) {
-      console.error("Error adding playlist for user:", error.message);
-      throw error;
+      console.error("Error adding playlist:", error);
+      throw new Error("Failed to add playlist");
     }
   }
   
