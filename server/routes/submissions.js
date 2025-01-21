@@ -11,8 +11,8 @@ const submissionsService = new SubmissionsService();
  */
 router.post("/", authenticateToken, async (req, res) => {
   try {
-    const { name, artist, genre, link } = req.body;
-    if (!name || !artist || !genre || !link) {
+    const { name, artist, genre, link, description } = req.body;
+    if (!name || !artist || !genre || !link || !description) {
       return res.status(HTTP_STATUS.BAD_REQUEST).json({
         error: "Missing required fields (name, artist, genre, link).",
       });
@@ -23,6 +23,7 @@ router.post("/", authenticateToken, async (req, res) => {
       artist,
       genre,
       link,
+      description,
     });
 
     res.status(HTTP_STATUS.CREATED).json(submission);

@@ -163,8 +163,7 @@ export default function CreatePlaylist() {
   };
 
   const deletePlaylist = async (id) => {
-    api.deletePlaylist(data.id);
-    await handleDecrement();
+    api.deletePlaylist(id);
     navigate("/index");
   };
 
