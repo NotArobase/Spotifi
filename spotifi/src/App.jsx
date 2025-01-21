@@ -31,30 +31,28 @@ function App() {
   ];
 
   return (
-    <>
     <AuthProvider>
       <Header />
       <div id="container">
-          <PlaylistProvider>
-            <NavBar />
-            <Routes>
-              {routes.map((route, index) => {
-                return route.protected ? (
-                  <Route
-                    key={index}
-                    path={route.path}
-                    element={<ProtectedRoute>{route.element}</ProtectedRoute>}
-                  />
-                ) : (
-                  <Route key={index} path={route.path} element={route.element} />
-                );
-              })}
-            </Routes>
-            <Footer />
-          </PlaylistProvider>
+        <PlaylistProvider>
+          <NavBar />
+          <Routes>
+            {routes.map((route, index) => {
+              return route.protected ? (
+                <Route
+                  key={index}
+                  path={route.path}
+                  element={<ProtectedRoute>{route.element}</ProtectedRoute>}
+                />
+              ) : (
+                <Route key={index} path={route.path} element={route.element} />
+              );
+            })}
+          </Routes>
+          <Footer />
+        </PlaylistProvider>
       </div>
     </AuthProvider>
-    </>
   );
 }
 

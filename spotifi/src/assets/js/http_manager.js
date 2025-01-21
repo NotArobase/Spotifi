@@ -148,22 +148,13 @@ export default class HTTPManager {
   }
 
   // Add a new playlist to the server
-  // async addNewPlaylist (playlist) {
-  //   try {
-  //     await HTTPInterface.POST(`${this.playlistBaseURL}`, playlist);
-  //   } catch (err) {
-  //     window.alert("An error has occurred while adding a new playlist", err);
-  //   }
-  // }
-
-  // Add a new playlist for the user
-  async addNewPlaylistForUser(userId, playlist) {
-    try {
-      await HTTPInterface.POST(`${this.playlistBaseURL}`, playlist);
-    } catch (err) {
-      window.alert("An error has occurred while adding a new playlist", err);
-    }
-  }
+   async addNewPlaylist (playlist) {
+     try {
+       await HTTPInterface.POST(`${this.playlistBaseURL}`, playlist);
+     } catch (err) {
+       window.alert("An error has occurred while adding a new playlist", err);
+     }
+   }
 
   // Update an existing playlist on the server
   async updatePlaylist (playlist) {
@@ -189,6 +180,22 @@ export default class HTTPManager {
       await HTTPInterface.PATCH(`${this.songsBaseURL}/${id}/like`);
     } catch (err) {
       window.alert("An error has occurred while trying to change the song status", err);
+    }
+  }
+
+  async getUserSongs (userId) {
+    try {
+      return await HTTPInterface.GET(`users/${userId}/songs`);
+    } catch (err) {
+      window.alert("An error has occurred while trying to get the user's songs", err);
+    }
+  }
+
+  async getUserPlaylists (userId) {
+    try {
+      return await HTTPInterface.GET(`users/${userId}/playlists`);
+    } catch (err) {
+      window.alert("An error has occurred while trying to get the user's playlists", err);
     }
   }
 }

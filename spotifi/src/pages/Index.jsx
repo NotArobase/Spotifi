@@ -4,7 +4,7 @@ import { ACTIONS } from "../reducers/reducer";
 import PlaylistContext from "../contexts/PlaylistContext";
 import Song from "../components/Song";
 import SearchBar from "../components/SearchBar";
-import { AuthContext } from '../contexts/AuthContext';
+import { AuthContext } from "../contexts/AuthContext";
 
 export default function Index() {
   const api = useContext(PlaylistContext).api;
@@ -13,42 +13,41 @@ export default function Index() {
   const [songs, setSongs] = useState([]);
   const { dispatch } = useContext(PlaylistContext); // Destructure dispatch here
 
-  const playSong = () => {
-      dispatch({ type: ACTIONS.PLAY, payload: { index: (index - 1) } });
-    };
+  const playSong = (index) => {
+    dispatch({ type: ACTIONS.PLAY, payload: { index: index - 1 } });
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const fetchedPlaylists = await api.fetchAllPlaylists();
-        setPlaylists(Array.isArray(fetchedPlaylists) ? fetchedPlaylists : []);
+        const fetchedPlaylists = await api.getUserPlaylists(currentUser._id);
+        setPlaylists(fetchedPlaylists);
       } catch (error) {
         console.error("Failed to fetch playlists:", error);
         setPlaylists([]);
       }
 
       try {
-        const fetchedSongs = await api.fetchAllSongs();
-
-        // Check if fetchedSongs is different from current state
+        const fetchedSongs = await api.getUserSongs(currentUser.username);
         if (fetchedSongs.length > 0 && JSON.stringify(fetchedSongs) !== JSON.stringify(songs)) {
-          setSongs(fetchedSongs); // Set songs locally
-          dispatch({ type: ACTIONS.LOAD, payload: { songs: fetchedSongs } }); // Dispatch only if songs are new
+          setSongs(fetchedSongs);
+          dispatch({ type: ACTIONS.LOAD, payload: { songs: fetchedSongs } });
         }
       } catch (error) {
         console.error("Failed to fetch songs:", error);
-        setSongs([]); // Set songs to an empty array on error
+        setSongs([]);
       }
     };
 
     fetchData();
-  }, [api, dispatch, songs]); // Dependency on songs, to check if it's different
-
+  //}, [api, dispatch, songs, currentUser.username]);
+    }, [api, dispatch, currentUser.username]);
   const handleSearch = async (event, query, exactMatch) => {
     event.preventDefault();
     const searchResults = await api.search(query, exactMatch);
     setPlaylists(searchResults.playlists);
     setSongs(searchResults.songs);
+    console.log("Search results:", searchResults);
   };
 
   const handleLocalFolder = async () => {
@@ -79,8 +78,6 @@ export default function Index() {
             }
           }
         }
-
-        setLocalSongs(files);
       } catch (err) {
         console.error("Error accessing the local folder:", err);
       }
@@ -96,9 +93,14 @@ export default function Index() {
         <div id="playlist-list">
           <h1>Mes Playlists</h1>
           <section id="playlist-container" className="playlist-container">
-            {playlists.map((playlist) => (
-              <Playlist key={playlist._id} playlist={playlist} />
-            ))}
+            {playlists.length > 0 ? (
+              playlists
+                .map((playlist) => (
+                  <Playlist key={playlist._id} playlist={playlist} />
+                ))
+            ) : (
+              <p>Aucune playlist disponible</p>
+            )}
           </section>
         </div>
 
@@ -120,15 +122,15 @@ export default function Index() {
             Accéder au dossier local
           </button>
           <div id="local-songs-list">
-            {songs.filter(song => song.isLocal && song.owner === currentUser.username).length > 0 ? (
+            {songs.length > 0 ? (
               songs
-                .filter(song => song.isLocal && song.owner === currentUser.username)
+                .filter((song) => song.isLocal)
                 .map((song, idx) => (
                   <Song
                     key={song._id}
                     song={song}
-                    index={idx + 1 + songs.filter(song => !song.isLocal).length} // Adjust index for local songs
-                    onClick={() => playSong(idx + 1 + songs.filter(song => !song.isLocal).length)}
+                    index={idx + 1 + songs.filter((song) => !song.isLocal).length} // Adjust index for local songs
+                    onClick={() => playSong(idx + 1 + songs.filter((song) => !song.isLocal).length)}
                   />
                 ))
             ) : (

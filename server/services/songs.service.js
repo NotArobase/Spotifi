@@ -134,10 +134,10 @@ class SongService {
     }
 
     // Insert the song into the collection
-    const result = await this.collection.insertOne(songWithId);
+    const result = await this.collection.insertOne(song);
 
     if (result.acknowledged) {
-      return { ...songWithId, _id: result.insertedId }; // Return the inserted song with the generated `_id`
+      return { ...song, _id: result.insertedId }; // Return the inserted song with the generated `_id`
     } else {
       // Skip the song without raising an error if insertion fails
       console.log("Failed to insert song into the database");
