@@ -46,8 +46,8 @@ app.use('/api/voting', votingRoutes.router);
 
 const server = app.listen(PORT, () => {
   dbService.connectToServer(DB_CONSTS.DB_URL).then(async () => {
-    await playlistsRouter.playlistService.populateDb();
-    await songsRouter.songService.populateDb();
+    // await playlistsRouter.playlistService.populateDb();
+    // await songsRouter.songService.populateDb();
 
     console.log(`Listening on port ${PORT}.`);
   });
