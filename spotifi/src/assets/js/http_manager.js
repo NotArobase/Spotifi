@@ -99,7 +99,7 @@ export default class HTTPManager {
 
   // Fetches a song file (Blob) from the server using its file name (src)
   async getSongURLFromId(src) {
-    const url = `https://garage.deuxfleurs.fr/audio/${src}`;
+    const url = `https://spotifi.web.deuxfleurs.fr/${src}`;
     console.log('Requesting URL:', url); // For debugging
     const songBlob = await fetch(url);
     const blob = await songBlob.blob();
@@ -148,18 +148,18 @@ export default class HTTPManager {
   }
 
   // Add a new playlist to the server
-  async addNewPlaylist (playlist) {
-    try {
-      await HTTPInterface.POST(`${this.playlistBaseURL}`, playlist);
-    } catch (err) {
-      window.alert("An error has occurred while adding a new playlist", err);
-    }
-  }
+   async addNewPlaylist (playlist) {
+     try {
+       await HTTPInterface.POST(`${this.playlistBaseURL}`, playlist);
+     } catch (err) {
+       window.alert("An error has occurred while adding a new playlist", err);
+     }
+   }
 
   // Update an existing playlist on the server
   async updatePlaylist (playlist) {
     try {
-      await HTTPInterface.PUT(`${this.playlistBaseURL}/${playlist.id}`, playlist);
+      await HTTPInterface.PUT(`${this.playlistBaseURL}/${playlist._id}`, playlist);
     } catch (err) {
       window.alert("An error has occurred while updating the playlist", err);
     }

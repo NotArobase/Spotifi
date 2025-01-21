@@ -26,7 +26,7 @@ router.get("/", async (request, response) => {
  */
 router.get("/:id", async (request, response) => {
   try {
-    const song = await songService.getSongById(parseInt(request.params.id));
+    const song = await songService.getSongById(request.params.id);
     if (song) {
       response.status(HTTP_STATUS.SUCCESS).json(song);
     } else {
@@ -44,7 +44,7 @@ router.get("/:id", async (request, response) => {
  */
 router.get("/player/:id", async (request, response) => {
   try {
-    const song = await songService.getSongById(parseInt(request.params.id));
+    const song = await songService.getSongById(request.params.id);
     const filePath = path.join(__dirname + "../../" + song.src);
     const stat = await fs.promises.stat(filePath);
     const fileSize = stat.size;

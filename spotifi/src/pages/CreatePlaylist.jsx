@@ -1,9 +1,12 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PlaylistContext from "../contexts/PlaylistContext";
+import { AuthContext } from '../contexts/AuthContext';
 
 export default function CreatePlaylist() {
   const api = useContext(PlaylistContext).api;
+  const { currentUser } = useContext(AuthContext);
+  const currentUserName = currentUser.username;
   const params = useParams();
   const navigate = useNavigate();
   const [songs, setSongs] = useState([]);
@@ -12,6 +15,7 @@ export default function CreatePlaylist() {
     name: "",
     description: "",
     songs: [],
+    owner: currentUserName,
   });
 
   useEffect(() => {
@@ -19,11 +23,19 @@ export default function CreatePlaylist() {
   }, []);
 
   const loadData = async () => {
+    console.log(currentUser);
     api.getAllSongs().then((songs) => {
-      setSongs(songs);
+      // Filter songs for "all" or owned by the current user
+      const filteredSongs = songs.filter(
+        (song) => song.owner === "all" || song.owner === currentUser.username
+      );
+      setSongs(filteredSongs);
+
       if (params.id) {
         api.getPlaylistById(params.id).then((playlist) => {
-          const songsInPlaylist = playlist.songs.map((song) => getNameFromId(song.id, songs));
+          const songsInPlaylist = playlist.songs.map((song) =>
+            getNameFromId(song.id, filteredSongs)
+          );
           setAddedSongs(songsInPlaylist);
           setData(playlist);
         });
@@ -33,13 +45,29 @@ export default function CreatePlaylist() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!data.name || !data.description) return;
-    if (params.id) {
-      api.updatePlaylist(data);
-    } else {
-      api.addNewPlaylist(data);
+    if (!data.name || !data.description) {
+      alert("Veuillez remplir tous les champs.");
+      return;
     }
-    navigate("/index");
+    try {
+      const userId = currentUser?.username; // Use user ID from AuthContext
+      if (params.id) {
+        if (data.owner !== userId) { // Ensure owner is the current user
+          alert("Utilisateur non connecté.");
+          return;
+        }
+        console.log(data);
+        await api.updatePlaylist(data); // Update the existing playlist
+        alert("Playlist mise à jour avec succès !");
+      } else {
+        setData({ ...data, owner: userId }); // Ensure owner is set when creating a new playlist
+        await api.addNewPlaylist(data); // Add a new playlist
+        alert("Playlist créée avec succès !");
+      }
+      navigate("/index");
+    } catch (error) {
+      alert("Une erreur est survenue lors de la soumission de la playlist.");
+    }
   };
 
   const addItemSelect = (event) => {
@@ -61,12 +89,12 @@ export default function CreatePlaylist() {
 
   const getIdFromName = (elementName) => {
     const element = songs.find((element) => element.name === elementName);
-    const id = element ? element.id : -1;
+    const id = element ? element._id : -1;
     return id;
   };
 
   const getNameFromId = (elementId, songs) => {
-    const song = songs.find((song) => song.id === elementId);
+    const song = songs.find((song) => song._id === elementId);
     const name = song ? song.name : "";
     return name;
   };
@@ -134,7 +162,7 @@ export default function CreatePlaylist() {
           <legend className="text-lg font-semibold text-gray-700">Chansons</legend>
           <datalist id="song-dataList">
             {songs.map((song) => (
-              <option key={song.id} value={song.name} />
+              <option key={song._id} value={song.name} />
             ))}
           </datalist>
           <button

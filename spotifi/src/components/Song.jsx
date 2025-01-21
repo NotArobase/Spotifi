@@ -1,16 +1,17 @@
-import React, { useState, useContext } from "react";
+//import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import { ACTIONS } from "../reducers/reducer";
 
 import PlaylistContext from "../contexts/PlaylistContext";
 
 export default function Song({ song, index }) {
   const { dispatch } = useContext(PlaylistContext);
-  const [liked, setLiked] = useState(song.liked);
-  const api = useContext(PlaylistContext).api;
-  const toggleLike = () => {
+  //const [liked, setLiked] = useState(song.liked);
+  //const api = useContext(PlaylistContext).api;
+  {/*const toggleLike = () => {
     setLiked(!liked);
     api.updateSong(song.id);
-  };
+  };*/}
 
   const playSong = () => {
     dispatch({ type: ACTIONS.PLAY, payload: { index: (index - 1) } });
@@ -30,10 +31,10 @@ export default function Song({ song, index }) {
       <p>{song.artist}</p>
 
       {/*TODO : modifier le statut aimé seulement si index n'existe pas */}
-      <button
+      {/*<button
         className={`${liked ? "fa" : "fa-regular"} fa-2x fa-heart`}
         onClick={() => {if (!index) toggleLike()}}
-      ></button>
+      ></button>*/}
     </section>
   );
 }

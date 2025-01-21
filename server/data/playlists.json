@@ -1,53 +1,48 @@
 {
   "playlists": [
     {
-      "id": "0",
       "name": "Ma Premiere Playlist",
       "description": "Playlist de base",
       "songs": [
         {
-          "id": 0
+          "id": "678e357a324a37d661afe681"
+
         },
         {
-          "id": 1
+          "id": "678e357a324a37d661afe682"
         }
       ]
     },
     {
-      "id": "1",
       "name": "Playlist de Rock",
       "description": "Playlist avec une descrption beaucoup plus longue",
       "songs": [
         {
-          "id": 0
+          "id": "678e357a324a37d661afe683"
         },
         {
-          "id": 3
+          "id": "678e357a324a37d661afe684"
         },
         {
-          "id": 4
+          "id": "678e357a324a37d661afe685"
         }
       ]
     },
     {
-      "id": "2",
       "name": "Discover Weekly",
       "description": "Playlist avec beaucoup de chansons",
       "songs": [
         {
-          "id": 0
+          "id": "678e357a324a37d661afe684"
         },
         {
-          "id": 1
+          "id": "678e357a324a37d661afe684"
         },
         {
-          "id": 2
+          "id": "678e357a324a37d661afe682"
         },
         {
-          "id": 3
-        },
-        {
-          "id": 4
+          "id": "678e357a324a37d661afe681"
         }
       ]
     }

@@ -1,6 +1,7 @@
 const { FileSystemManager } = require("./file_system_manager");
 const { dbService } = require("./database.service");
 const DB_CONSTS = require("../utils/env");
+const { ObjectId } = require('mongodb');
 
 const path = require("path");
 
@@ -28,11 +29,19 @@ class SongService {
    * @param {number} id identifiant de la chanson
    * @returns chanson correspondant à l'id
    */
-  async getSongById (id) {
-    const query = { id: id };
-    let song = await this.collection.findOne(query);
+  async getSongById(id) {
+    const query = { _id: new ObjectId(id) }; // Ensure the query is a number
+    console.log(`Querying song with query:`, query);
+
+    const song = await this.collection.findOne(query);
+
+    if (!song) {
+      console.log(`No song found for query:`, query);
+      return null;
+    }
     return song;
   }
+
 
   /**
    * Modifie l'état aimé d'une chanson par l'état inverse
@@ -41,6 +50,7 @@ class SongService {
    */
   async updateSongLike (id) {
     let song = await this.getSongById(id);
+    console.log('Retrieved song:', song);
     const newLiked = !(song.liked);
     const updateQuery = { $set: { liked: newLiked } };
     const filter = { _id: song._id };
@@ -75,25 +85,6 @@ class SongService {
   }
 
     /**
-   * Génère un identifiant unique incrémental pour une chanson.
-   * @returns {Promise<number>} L'ID généré (0, 1, 2, ...)
-   */
-  async generateSimpleId() {
-    const lastSong = await this.collection
-      .find({})
-      .sort({ id: -1 }) // Trier par ID décroissant
-      .limit(1)
-      .toArray();
-
-    if (lastSong.length === 0) {
-      return 0; // Premier ID si la collection est vide
-    }
-
-    return lastSong[0].id + 1; // Incrémenter l'ID le plus élevé
-  }
-
-
-    /**
    * Ajoute une nouvelle chanson dans la base de données avec un ID incrémental.
    * @param {Object} song Les métadonnées de la chanson (name, path, etc.)
    * @returns {Promise<Object>} La chanson insérée
@@ -108,14 +99,11 @@ class SongService {
       return null; // You can return null or the existing song if you prefer
     }
 
-    const id = await this.generateSimpleId(); // Generate an incremental ID
-    const songWithId = { ...song, id }; // Add the ID to the song object
-
     // Insert the song into the collection
-    const result = await this.collection.insertOne(songWithId);
+    const result = await this.collection.insertOne(song);
 
     if (result.acknowledged) {
-      return { ...songWithId, _id: result.insertedId }; // Return the inserted song with the generated `_id`
+      return { ...song, _id: result.insertedId }; // Return the inserted song with the generated `_id`
     } else {
       // Skip the song without raising an error if insertion fails
       console.log("Failed to insert song into the database");

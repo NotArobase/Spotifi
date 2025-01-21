@@ -4,6 +4,8 @@ import { formatTime } from "../assets/js/utils";
 import { SHORTCUTS, SKIP_TIME } from "../assets/js/consts";
 import PlaylistContext from "../contexts/PlaylistContext";
 import { useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRepeat } from "@fortawesome/free-solid-svg-icons";
 
 export default function Player() {
 
@@ -11,6 +13,7 @@ export default function Player() {
   const { state, dispatch } = useContext(PlaylistContext);
   const [currentTime, setCurrentTime] = useState("00:00");
   const [timeLine, setTimeLine] = useState(0);
+  const { loopMode } = state;
 
   const playSong = () => {
     dispatch({ type: ACTIONS.PLAY, payload: { index: -1 } });
@@ -46,9 +49,14 @@ export default function Player() {
     dispatch({ type: ACTIONS.SHUFFLE });
   };
 
-  // ajouter une action pour activer ou désactiver Le loop
-  const loopToggle = () => {
-    dispatch({ type: ACTIONS.TOGGLE_LOOP });
+  const toggleLoop = () => {
+    const nextMode =
+      state.loopMode === "none"
+        ? "single"
+        : state.loopMode === "single"
+        ? "playlist"
+        : "none";
+    dispatch({ type: ACTIONS.LOOP, payload: nextMode });
   };
 
   const shortcutHandler = (event) => {
@@ -65,36 +73,44 @@ export default function Player() {
     shortcuts.set(SHORTCUTS.NEXT_SONG, () => playNextSong());
     shortcuts.set(SHORTCUTS.PREVIOUS_SONG, () => playPreviousSong());
     shortcuts.set(SHORTCUTS.MUTE, () => muteToggle());
-    shortcuts.set(SHORTCUTS.Loop, () => loopToggle());
+    shortcuts.set(SHORTCUTS.Loop, () => toggleLoop());
 
     document.addEventListener("keydown", shortcutHandler);
   };
 
   useEffect(() => {
-    state.audio.addEventListener("timeupdate", () => {
+    const handleTimeUpdate = () => {
       const position = (100 * state.audio.currentTime) / state.audio.duration;
       setCurrentTime(formatTime(state.audio.currentTime));
       setTimeLine(!isNaN(state.audio.duration) ? position : 0);
-    });
+    };
 
-    state.audio.addEventListener("ended", () => {
-      if (state.loopMode === "single") {
-      // Rejoue la chanson actuelle
-      state.audio.currentTime = 0;
-      state.audio.play();
-      } else if (state.loopMode === "playlist") {
-      // Passe à la chanson suivante ou revient au début
-      playNextSong();
-      }
-    });
+    const handleEnded = () => {
+      switch (state.loopMode) {
+        case "single":
+          if (state.audio.currentTime === state.audio.duration) {
+            state.audio.currentTime = 0; state.audio.play();
+          }
+          break;
+        case "playlist":
+          playNextSong();
+          break;
+        default:
+          dispatch({ type: ACTIONS.STOP });
+        }
+      };
 
+    state.audio.addEventListener("timeupdate", handleTimeUpdate);
+    state.audio.addEventListener("ended", handleEnded);
     bindShortcuts();
 
     return () => {
+      state.audio.removeEventListener("timeupdate", handleTimeUpdate);
+      state.audio.removeEventListener("ended", handleEnded);
       document.removeEventListener("keydown", shortcutHandler);
       dispatch({ type: ACTIONS.STOP }); // On arrête le son lorsque le component n'est plus présent
     };
-  }, [state.loopMode]);
+  }, [state.audio, state.loopMode, dispatch, playNextSong, bindShortcuts]);
   return (
     <>
       <div id="now-playing">On joue : {state.currentSong}</div>
@@ -133,17 +149,22 @@ export default function Player() {
           ></button>
           <button
             className={`control-btn fa fa-2x ${
-              state.loopMode === "single"
-                ? "fa-repeat-1"
-                : state.loopMode === "playlist"
-                ? "fa-repeat"
-                : "fa-ban"
+               loopMode === "none" ? "loop" : loopMode === "single" ? "loop-single" : "loop-playlist"
               }`}
             id="loop"
             onClick={() => {
               toggleLoop();
             }}
-          ></button>
+          >
+            <FontAwesomeIcon icon={faRepeat} />
+          </button>
+          <span id="loop-mode-display">
+            {loopMode === "none"
+              ? "No Loop"
+              : loopMode === "single"
+              ? "Repeat One"
+              : "Repeat All"}
+          </span>
         </section>
         <section id="timeline-container" className="flex-row">
           {/*TODO : afficher le temps en cours de la chanson */}
