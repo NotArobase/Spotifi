@@ -1,6 +1,5 @@
 // spotifi/src/pages/SubmissionPage.jsx
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { SERVER_URL } from "../assets/js/consts";
 
 export default function SubmissionPage() {
