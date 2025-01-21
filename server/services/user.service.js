@@ -40,7 +40,7 @@ class UserService {
       if (!username || !password) {
       throw new Error('username ou password manquant');
       }
-      result = await this.collection.insertOne({ username, password });
+      const result = await this.collection.insertOne({ username, password });
       const createdUser = await this.collection.findOne({ _id: result.insertedId });
       return createdUser;
     } catch (error) {
