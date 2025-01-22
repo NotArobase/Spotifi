@@ -64,7 +64,7 @@ export default function SubmissionPage() {
   return (
     <div className="bg-gray-100 min-h-screen flex justify-center items-center p-6">
       <div className="bg-white rounded shadow-md w-full max-w-lg h-[90vh] overflow-y-auto p-6">
-        <h1 className="text-2xl font-bold mb-6 text-gray-800">Submit Your Song</h1>
+        <h1 className="text-2xl font-bold mb-6 text-gray-800">Soumettre votre chanson</h1>
         {error && (
           <div className="bg-red-100 text-red-700 px-4 py-2 rounded mb-4">
             {error}
