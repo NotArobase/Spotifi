@@ -44,10 +44,29 @@ export default function Index() {
     }, [api, dispatch, currentUser.username]);
   const handleSearch = async (event, query, exactMatch) => {
     event.preventDefault();
-    const searchResults = await api.search(query, exactMatch);
-    setPlaylists(searchResults.playlists);
-    setSongs(searchResults.songs);
-    console.log("Search results:", searchResults);
+    if (!query) {
+      try {
+        const fetchedPlaylists = await api.getUserPlaylists(currentUser.username);
+        setPlaylists(fetchedPlaylists);
+      } catch (error) {
+        console.error("Failed to fetch playlists:", error);
+        setPlaylists([]);
+      }
+
+      try {
+        const fetchedSongs = await api.getUserSongs(currentUser.username);
+        setSongs(fetchedSongs);
+        dispatch({ type: ACTIONS.LOAD, payload: { songs: fetchedSongs } });
+      } catch (error) {
+        console.error("Failed to fetch songs:", error);
+        setSongs([]);
+      }
+    } else {
+      const searchResults = await api.search(query, exactMatch, currentUser.username);
+      setPlaylists(searchResults.playlists);
+      setSongs(searchResults.songs);
+      console.log("Search results:", searchResults);
+    }
   };
 
   const handleLocalFolder = async () => {
@@ -75,6 +94,17 @@ export default function Index() {
               await api.addNewSong(songMetadata);
             } catch (error) {
               console.error("Failed to add song to database:", error);
+            }
+
+            try {
+              const fetchedSongs = await api.getUserSongs(currentUser.username);
+              if (fetchedSongs.length > 0 && JSON.stringify(fetchedSongs) !== JSON.stringify(songs)) {
+                setSongs(fetchedSongs);
+                dispatch({ type: ACTIONS.LOAD, payload: { songs: fetchedSongs } });
+              }
+            } catch (error) {
+              console.error("Failed to fetch songs:", error);
+              setSongs([]);
             }
           }
         }

@@ -14,7 +14,7 @@ router.post("/", authenticateToken, async (req, res) => {
     const { name, artist, genre, link, description } = req.body;
     if (!name || !artist || !genre || !link || !description) {
       return res.status(HTTP_STATUS.BAD_REQUEST).json({
-        error: "Missing required fields (name, artist, genre, link).",
+        error: "Champs obligatoires manquants (nom, artiste, genre, lien).",
       });
     }
 

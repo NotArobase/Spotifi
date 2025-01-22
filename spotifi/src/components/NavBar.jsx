@@ -36,7 +36,7 @@ export default function NavBar() {
               className={location.pathname === "/voting" ? "active-page" : ""}
             >
               <i className="fa fa-check-circle"></i>
-              <span>Vote for Songs</span>
+              <span>Vote pour Chansons</span>
             </Link>
           </li>
 
@@ -46,7 +46,7 @@ export default function NavBar() {
               className={location.pathname === "/submit" ? "active-page" : ""}
             >
               <i className="fa fa-microphone"></i>
-              <span>Submit Song</span>
+              <span>Soumettre une chanson</span>
             </Link>
           </li>
 

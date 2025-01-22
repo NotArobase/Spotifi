@@ -4,9 +4,9 @@ class SearchBarService {
     this.playlistService = playlistService;
   }
 
-  async search (searchParameters, exact) {
-    const songs = await this.songsService.search(searchParameters, exact);
-    const playlists = await this.playlistService.search(searchParameters, exact);
+  async search (searchParameters, exact, username) {
+    const songs = await this.songsService.search(searchParameters, exact, username);
+    const playlists = await this.playlistService.search(searchParameters, exact, username);
     return { songs, playlists };
   }
 }
