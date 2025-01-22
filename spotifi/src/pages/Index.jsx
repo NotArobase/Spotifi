@@ -76,6 +76,17 @@ export default function Index() {
             } catch (error) {
               console.error("Failed to add song to database:", error);
             }
+
+            try {
+              const fetchedSongs = await api.getUserSongs(currentUser.username);
+              if (fetchedSongs.length > 0 && JSON.stringify(fetchedSongs) !== JSON.stringify(songs)) {
+                setSongs(fetchedSongs);
+                dispatch({ type: ACTIONS.LOAD, payload: { songs: fetchedSongs } });
+              }
+            } catch (error) {
+              console.error("Failed to fetch songs:", error);
+              setSongs([]);
+            }
           }
         }
       } catch (err) {
