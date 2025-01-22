@@ -102,12 +102,22 @@ class SongService {
    * @param {boolean} exact si la recherche est sensible à la case
    * @returns toutes les chansons qui ont le mot clé cherché dans leur contenu (name, artist, genre)
    */
-  async search (substring, exact) {
+  async search (substring, exact, username) {
     let filter;
     if (exact) {
-      filter = { $or: [{ name: { $regex: `${substring}` } }, { artist: { $regex: `${substring}` } }, { genre: { $regex: `${substring}` } }] };
+      filter = { 
+        $and: [
+          { $or: [{ name: { $regex: `${substring}` } }, { artist: { $regex: `${substring}` } }, { genre: { $regex: `${substring}` } }] },
+          { owner: { $in: ["all", username] } }
+        ]
+      };
     } else {
-      filter = { $or: [{ name: { $regex: `${substring}`, $options: "i" } }, { artist: { $regex: `${substring}`, $options: "i" } }, { genre: { $regex: `${substring}`, $options: "i" } }] };
+      filter = { 
+        $and: [
+          { $or: [{ name: { $regex: `${substring}`, $options: "i" } }, { artist: { $regex: `${substring}`, $options: "i" } }, { genre: { $regex: `${substring}`, $options: "i" } }] },
+          { owner: { $in: ["all", username] } }
+        ]
+      };
     }
     const songs = await this.collection.find(filter).toArray();
     return songs;

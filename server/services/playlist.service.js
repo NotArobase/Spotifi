@@ -138,12 +138,22 @@ class PlaylistService {
    * @param {boolean} exact si la recherche est sensible à la case
    * @returns toutes les playlists qui ont le mot clé cherché dans leur contenu (name, description)
    */
-  async search(substring, exact) {
+  async search(substring, exact, username) {
     let filter;
     if (exact) {
-      filter = { $or: [{ name: { $regex: `${substring}` } }, { description: { $regex: `${substring}` } }] };
+      filter = { 
+        $and: [
+          { owner: username },
+          { $or: [{ name: { $regex: `${substring}` } }, { description: { $regex: `${substring}` } }] }
+        ]
+      };
     } else {
-      filter = { $or: [{ name: { $regex: `${substring}`, $options: "i" } }, { description: { $regex: `${substring}`, $options: "i" } }] };
+      filter = { 
+        $and: [
+          { owner: username },
+          { $or: [{ name: { $regex: `${substring}`, $options: "i" } }, { description: { $regex: `${substring}`, $options: "i" } }] }
+        ]
+      };
     }
     const playlists = await this.collection.find(filter).toArray();
     return playlists;
