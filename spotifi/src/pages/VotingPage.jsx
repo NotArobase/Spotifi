@@ -117,6 +117,9 @@ const VotingPage = () => {
         );
       }
 
+      fetchLeaderboard();
+      fetchInitialData();
+
       setMessage(result.message);
       setTimeout(() => setMessage(''), 3000);
     } catch (err) {
