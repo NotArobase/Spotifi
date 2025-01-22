@@ -85,11 +85,12 @@ router.get("/:username/playlists", async (request, response) => {
 /**
  * Incrémente le nombre de playlists d'un utilisateur 
  * @memberof module:routes/users 
- * @name PUT /users/:user_id/increment_playlist
+ * @name PUT /users/:userName/increment_playlist
  */
-router.put("/:user_id/increment_playlist", async (req, res) => {
-  try { const userId = req.params.user_id;
-    await userService.incrementPlaylistCount(userId);
+router.put("/:userName/increment_playlist", async (req, res) => {
+  try { 
+    const user = req.params.userName;
+    await userService.incrementPlaylistCount(user);
     res.status(HTTP_STATUS.SUCCESS).json({ message: "N_playlist incremented successfully" });
   } catch (error) {
     res.status(HTTP_STATUS.SERVER_ERROR).json({ error: error.message }); }
@@ -100,14 +101,29 @@ router.put("/:user_id/increment_playlist", async (req, res) => {
   * @memberof module:routes/users 
   * @name PUT /users/:user_id/decrement_playlist
   */ 
- router.put("/:user_id/decrement_playlist", async (req, res) => {
+ router.put("/:userName/decrement_playlist", async (req, res) => {
   try {
-    const userId = req.params.user_id;
-    await userService.decrementPlaylistCount(userId);
+    const user = req.params.userName;
+    await userService.decrementPlaylistCount(user);
     res.status(HTTP_STATUS.SUCCESS).json({ message: "N_playlist decremented successfully" });
   } catch (error) {
     res.status(HTTP_STATUS.SERVER_ERROR).json({ error: error.message });
   }
 });
 
+  /**
+  * Donne le nombre de de playlist pour un utilisateur donné 
+  * @memberof module:routes/users 
+  * @name GET /users/:userName/playlists-count
+  */ 
+  router.get("/:userName/playlists-count", async (req, res) => {
+    try {
+      const username = req.params.userName;
+      const count = await userService.getPlaylistsCountForUser(username);
+      res.status(HTTP_STATUS.SUCCESS).json({ count });
+    } catch (error) {
+      res.status(HTTP_STATUS.SERVER_ERROR).json({ error: error.message });
+  }
+  });
+  
 module.exports = { router, userService };

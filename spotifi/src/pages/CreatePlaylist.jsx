@@ -46,11 +46,7 @@ export default function CreatePlaylist() {
 
   const handleIncrement = async () => {
     try {
-      const response = await fetch(`http://localhost:5020/api/users/${currentUser.username}/increment_playlist`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-        });
+      const response = await api.incr(currentUserName);
       const data = await response.json();
         if (!response.ok) {
           throw new Error(data.error || 'Failed to increment N_playlist.');
@@ -63,11 +59,8 @@ export default function CreatePlaylist() {
 
   const handleDecrement = async () => {
     try {
-      const response = await fetch(`http://localhost:5020/api/users/${currentUser.username}/decrement_playlist`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-        });
+
+      const response = await api.decr(currentUser.username);
       const data = await response.json();
         if (!response.ok) {
           throw new Error(data.error || 'Failed to decrement N_playlist.');
@@ -75,6 +68,20 @@ export default function CreatePlaylist() {
       alert('N_playlist decremented successfully.');
     } catch (err) {
       alert(`Error: ${err.message}`);
+      }
+    };
+
+  const getNplaylistFromName = async () => {
+    try {
+      const response = await api.NplaylistFromName (currentUser.username);
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to get playlist number.');
+      }
+      return data.N_playlist;
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+      return 0; // Retourner 0 en cas d'erreur pour éviter les problèmes dans handleSubmit
       }
     };
 
@@ -96,7 +103,7 @@ export default function CreatePlaylist() {
         alert("Playlist mise à jour avec succès !");
       } else {
           setData({ ...data, owner: userId }); // Ensure owner is set when creating a new playlist
-          n_playlist = currentUser.N_playlist;
+          n_playlist = await getNplaylistFromName();
           if (n_playlist < MAX_PLAYLISTS) {
             await api.addNewPlaylist(data); // Add a new playlist
             await handleIncrement(); // Call handleIncrement

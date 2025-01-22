@@ -72,11 +72,13 @@ export default class HTTPManager {
   constructor () {
     this.songs = {};
     this.playlists = {};
+    this.users = {};
     this.songsBaseURL = "songs";
     this.songFileBaseURL = "player";
     this.playlistBaseURL = "playlists";
     this.songPlayer = "player";
     this.searchBaseURL = "search";
+    this.userBaseURL = "users";
   }
 
   // Fetches all songs from the server
@@ -198,4 +200,31 @@ export default class HTTPManager {
       window.alert("An error has occurred while trying to get the user's playlists", err);
     }
   }
+
+  // Update an existing playlist on the server
+  async incr (username) {
+    try {
+      await HTTPInterface.PUT(`users/${username}/increment_playlist`);
+    } catch (err) {
+      window.alert("An error has occurred while incrementing N_playlist", err);
+    }
+  }
+
+  // Delete a playlist from the server
+  async decr (username) {
+    try {
+      await HTTPInterface.PUT(`users/${username}/decrement_playlist`);
+    } catch (err) {
+      window.alert("An error has occurred while decrementing N_playlist", err);
+    }
+  }
+
+  async NplaylistFromName (username){
+    try {
+    await HTTPInterface.GET(`users/${username}/playlists-count`);
+    } catch (err) {
+      window.alert("An error has occurred while trying to get N_playlist", err);
+    }
+  }
+  
 }

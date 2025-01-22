@@ -3,7 +3,6 @@ const { dbService } = require("./database.service");
 const DB_CONSTS = require("../utils/env");
 const path = require("path");
 const { randomUUID } = require("crypto");
-
 const { PlaylistService } = require("./playlist.service");
 const { SongService } = require("./songs.service");
 
@@ -13,17 +12,9 @@ const songService = new SongService();
 class UserService {
 
   constructor () {
-    this.JSON_PATH = path.join(__dirname + "../data/users.json");
+    this.JSON_PATH = path.join(__dirname + "../../data/users.json");
     this.fileSystemManager = new FileSystemManager();
     this.dbService = dbService;
-
-    this.dbService.connectToServer(DB_CONSTS.DB_URI)
-    .then(() => {
-      console.log('Database connected in UserService');
-    })
-    .catch((error) => {
-      console.error('Error connecting to database in UserService:', error); 
-    });
   }
 
   get collection () {
@@ -40,7 +31,7 @@ class UserService {
       if (!username || !password) {
       throw new Error('username ou password manquant');
       }
-      result = await this.collection.insertOne({ username, password, N_playlist: 0});
+      const result = await this.collection.insertOne({ username, password, N_playlist: 0});
       const createdUser = await this.collection.findOne({ _id: result.insertedId });
       return createdUser;
     } catch (error) {
@@ -52,9 +43,9 @@ class UserService {
   * @param {string} Username - The username of the user to update
   * @returns 
   */
-  async incrementPlaylistCount(userId) {
+  async incrementPlaylistCount(userName) {
     try {
-      await this.collection.updateOne( { _id: userId }, { $inc: { N_playlist: 1 }} );
+      await this.collection.updateOne( { username: userName }, { $inc: { N_playlist: 1 }} );
     } catch (error) {
       throw new Error('Error incrementing playlist count: ' + error.message);
     }
@@ -65,9 +56,9 @@ class UserService {
   * @param {string} UserID - The userID of the user to update
   * @returns 
   */
-  async decrementPlaylistCount(userId) {
+  async decrementPlaylistCount(userName) {
     try {
-      await this.collection.updateOne( { _id: userId }, { $inc: { N_playlist: -1 } } );
+      await this.collection.updateOne( { username: userName }, { $inc: { N_playlist: -1 } } );
     } catch (error) {
       throw new Error('Error decrementing playlist count: ' + error.message);
     }
@@ -103,33 +94,20 @@ class UserService {
 
   /**
    * get the playlist count of a user
-   * @param {string} userID - The user Id of the user to get the playlist count
+   * @param {string} userName - The username of the user to get the playlist count
    * @returns {Promise<Object|null>} - playlist count
    */
-  async getPlaylistsCountForUser(userId) {
-      try {
-        // Vérifie que l'utilisateur existe d'abord (optionnel mais recommandé)
-        const userExists = await this.collection.findOne({ _id: userId });
-        if (!userExists) {
-          throw new Error("User not found");
-        }
-        return user ? user.N_playlist : 0;
-      } catch (error) {
-        console.error("Error fetching playlists count for user:", error.message);
-        throw new Error("Failed to fetch playlists count");
-      }
-    }
-
-  /**
-   * Get user by username
-   * @param {string} username - The username of the user to retrieve
-   * @returns {Promise<Object|null>} - The user data or null if not found
-   */
-  async getUserByUsername(username) {
+  async getPlaylistsCountForUser(userName) {
     try {
-      return await this.collection.findOne({ username: username });
+      // Vérifie que l'utilisateur existe d'abord
+      const userExists = await this.collection.findOne({ username: userName });
+      if (!userExists) {
+        throw new Error("User not found");
+      }
+      return userExists.N_playlist ;
     } catch (error) {
-      throw new Error('Error retrieving user: ' + error.message);
+      console.error("Error fetching playlists count for user:", error.message);
+      throw new Error("Failed to fetch playlists count");
     }
   }
 
@@ -165,39 +143,22 @@ class UserService {
   }
 
   /**
-   * Add a playlist for a specific user
-   * @param {string} userID - The Id of the user to add playlist
-   * @param {object} playlist -  The playlist to add
-   * @returns  The updated user or null if not found
-   */
-  async addPlaylistForUser(userId, playlist) {
-    try {
-      playlist.owner = userId;
-      const result = await this.collection.insertOne(playlist);
-      return result.ops[0];
-    } catch (error) {
-      console.error("Error adding playlist:", error);
-      throw new Error("Failed to add playlist");
-    }
-  }
-
-  /**
    * Get user by username
    * @param {string} username - The username of the user to retrieve
    * @returns {Promise<Object|null>} - The user data or null if not found
    */
-  async getUserByUsername(username) {
+  async getUserByUsername(userName) {
     try {
-      return await this.collection.findOne({ username: username });
+      return await this.collection.findOne({ username: userName });
     } catch (error) {
       console.error('Error retrieving user:', error.message);
       throw new Error('Error retrieving user: ' + error.message);
     }
   }
 
-  async getUserSongs(username) {
+  async getUserSongs(userName) {
     try {
-      const user = await this.getUserByUsername(username);
+      const user = await this.getUserByUsername(userName);
       if (!user) {
         throw new Error('User not found');
       }
@@ -219,11 +180,8 @@ class UserService {
       if (!user) {
         throw new Error('User not found');
       }
-
       const playlists = await playlistService.getAllPlaylists();
-
       const userPlaylists = playlists.filter((playlist) => playlist.owner === user.username);
-
       return userPlaylists;
     } catch (error) {
       console.error("Error fetching user's playlists:", error.message);
