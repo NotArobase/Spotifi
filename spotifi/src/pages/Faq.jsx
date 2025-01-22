@@ -5,11 +5,7 @@ export default function Faq() {
   const faqData = [
     {
       question: "Comment ajouter une chanson à ma playlist ?",
-      answer: "Vous pouvez ajouter une chanson en cliquant sur le bouton 'Ajouter à la playlist' à côté de chaque titre.",
-    },
-    {
-      question: "Comment activer la fonction de répétition (loop) ?",
-      answer: "Cliquez sur le bouton de répétition dans le lecteur. Vous pouvez choisir entre 'Répéter une chanson' ou 'Répéter toute la playlist'.",
+      answer: "Accédez à votre playlist, puis sélectionner le + afin d'ajouter une nouvelle ligne et choisir la chanson à rajouter",
     },
     {
       question: "Puis-je écouter de la musique hors ligne ?",
@@ -17,11 +13,11 @@ export default function Faq() {
     },
     {
       question: "Comment supprimer une chanson de ma playlist ?",
-      answer: "Accédez à votre playlist, puis cliquez sur l'icône de suppression à côté de la chanson que vous souhaitez retirer.",
+      answer: "Accédez à votre playlist, puis cliquez sur le - à côté de la chanson que vous souhaitez retirer.",
     },
     {
       question: "Puis-je partager ma playlist avec mes amis ?",
-      answer: "Oui, vous pouvez partager votre playlist en cliquant sur le bouton 'Partager' et en copiant le lien généré.",
+      answer: "Non, cette fonctionnalité n'est pas encore disponible.",
     },
   ];
 
