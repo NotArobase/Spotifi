@@ -28,14 +28,14 @@ router.post("/vote", authenticateToken, async (req, res) => {
   try {
     const { songId } = req.body;
     if (!songId) {
-      return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: "Song ID required" });
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: "Song ID requis" });
     }
     const result = await votingService.castVote(req.user.id, songId);
     
     if (result.action === 'removed') {
-      return res.status(HTTP_STATUS.SUCCESS).json({ message: 'Vote removed!' });
+      return res.status(HTTP_STATUS.SUCCESS).json({ message: 'Vote supprimé!' });
     } else {
-      return res.status(HTTP_STATUS.SUCCESS).json({ message: 'Thank you for voting!' });
+      return res.status(HTTP_STATUS.SUCCESS).json({ message: 'Merci pour votre vote!' });
     }
 
   } catch (error) {

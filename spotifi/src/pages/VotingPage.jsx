@@ -71,7 +71,7 @@ const VotingPage = () => {
 
   const toggleVote = async (songId) => {
     if (votedSongs.length >= 20 && !votedSongs.includes(songId)) {
-      setError('You can only vote for up to 20 songs.');
+      setError('Vous ne pouvez voter que pour 20 chansons maximum.');
       setTimeout(() => setError(''), 3000);
       return;
     }
@@ -101,7 +101,7 @@ const VotingPage = () => {
 
       const result = await response.json();
 
-      if (result.message === 'Vote removed!') {
+      if (result.message === 'Vote supprimé!') {
         setVotedSongs(votedSongs.filter((id) => id !== songId));
         setSongs(
           songs.map((song) =>
@@ -142,7 +142,7 @@ const VotingPage = () => {
       <div className="flex-1 overflow-y-auto mr-6">
         <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Song Voting</h1>
         <p className="text-lg mb-8 text-center text-gray-600">
-          Choose up to 20 songs from the list below. The most popular songs will be selected!
+        Choisissez jusqu'à 20 chansons dans la liste ci-dessous. Les chansons les plus populaires seront sélectionnées !
         </p>
 
         {message && (
