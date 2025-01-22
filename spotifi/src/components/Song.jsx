@@ -20,17 +20,14 @@ export default function Song({ song, index }) {
     <section
       className="song-item flex-row"
       onClick={() => {
-        {/*TODO : joueur une chanson seulement si index existe */ }
         {if (index) playSong() }
       }}
     >
       {index ? <span>{index}</span> : <></>}
-      {/*TODO : ajouter les informations de la chanson */}
       <p>{song.name}</p>
       <p>{song.genre}</p>
       <p>{song.artist}</p>
 
-      {/*TODO : modifier le statut aimé seulement si index n'existe pas */}
       {/*<button
         className={`${liked ? "fa" : "fa-regular"} fa-2x fa-heart`}
         onClick={() => {if (!index) toggleLike()}}
