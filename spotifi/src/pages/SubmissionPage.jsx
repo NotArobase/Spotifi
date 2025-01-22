@@ -13,14 +13,14 @@ export default function SubmissionPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name || !artist || !genre || !link || !description) {
-      setError("Please fill in all fields.");
+      setError("Veuillez remplir tous les champs.");
       return;
     }
 
     try {
       const token = localStorage.getItem("authToken");
       if (!token) {
-        setError("You must be logged in to submit a song.");
+        setError("Vous devez être connecté pour soumettre une chanson.");
         return;
       }
       console.log(JSON.stringify({
@@ -50,7 +50,7 @@ export default function SubmissionPage() {
         throw new Error(resData.error || "Failed to submit song");
       }
 
-      setMessage("Song submitted successfully!");
+      setMessage("Chanson soumise avec succès !");
       setName("");
       setArtist("");
       setGenre("");
@@ -78,7 +78,7 @@ export default function SubmissionPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-gray-700 font-semibold mb-2" htmlFor="songName">
-              Song Name
+              Chanson
             </label>
             <input
               id="songName"
@@ -86,13 +86,13 @@ export default function SubmissionPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full border border-gray-300 rounded px-3 py-2"
-              placeholder="e.g. My Awesome Track"
+              placeholder="Par exemple, Mon morceau génial"
             />
           </div>
 
           <div>
             <label className="block text-gray-700 font-semibold mb-2" htmlFor="artistName">
-              Artist Name
+              Artiste
             </label>
             <input
               id="artistName"
@@ -100,7 +100,7 @@ export default function SubmissionPage() {
               value={artist}
               onChange={(e) => setArtist(e.target.value)}
               className="w-full border border-gray-300 rounded px-3 py-2"
-              placeholder="e.g. John Doe"
+              placeholder="Par exemple, John Doe"
             />
           </div>
 
@@ -114,13 +114,13 @@ export default function SubmissionPage() {
               value={genre}
               onChange={(e) => setGenre(e.target.value)}
               className="w-full border border-gray-300 rounded px-3 py-2"
-              placeholder="e.g. Rock, Pop, Hip-hop..."
+              placeholder="Par exemple, Rock, Pop, Hip-hop..."
             />
           </div>
 
           <div>
             <label className="block text-gray-700 font-semibold mb-2" htmlFor="songLink">
-              Song Link
+              Lien vers la chanson
             </label>
             <input
               id="songLink"
@@ -128,13 +128,13 @@ export default function SubmissionPage() {
               value={link}
               onChange={(e) => setLink(e.target.value)}
               className="w-full border border-gray-300 rounded px-3 py-2"
-              placeholder="URL to SoundCloud, YouTube, etc."
+              placeholder="URL vers SoundCloud, YouTube, etc."
             />
           </div>
 
           <div>
             <label className="block text-gray-700 font-semibold mb-2" htmlFor="description">
-              Tell us about your song!
+            Parlez-nous de votre chanson !
             </label>
             <input
               id="description"
@@ -142,7 +142,7 @@ export default function SubmissionPage() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="w-full border border-gray-300 rounded px-3 py-2"
-              placeholder="Describe your song, your project, link an image..."
+              placeholder="Décrivez votre chanson, votre projet..."
               rows= {4}
             />
           </div>

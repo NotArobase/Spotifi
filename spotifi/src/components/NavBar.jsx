@@ -46,7 +46,7 @@ export default function NavBar() {
               className={location.pathname === "/submit" ? "active-page" : ""}
             >
               <i className="fa fa-microphone"></i>
-              <span>Submit Song</span>
+              <span>Soumettre une chanson</span>
             </Link>
           </li>
 
