@@ -90,6 +90,7 @@ export default function Player() {
             className={`control-btn fa fa-2x ${state.audio.paused ? "fa-play" : "fa-pause"}`}
             id="play"
             onClick={() => {playSong();}}
+          ></button>
           <button
             className="control-btn fa fa-2x fa-arrow-right"
             id="next"
